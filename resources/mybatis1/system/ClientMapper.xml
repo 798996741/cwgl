@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ClientMapper">
+
+	
+	<!--表名 -->
+	<sql id="tableName">
+		t_client
+	</sql>
+	<sql id="sellpTableName">
+		t_sellp
+	</sql>
+	<sql id="taxinfoTableName">
+		t_taxinfo
+	</sql>
+	
+	<!-- 字段 -->
+	<sql id="Field">
+		cliid,
+		csname,
+		clifname,
+		clisname,
+		clino,
+		invid,
+		tname,
+		taxno,
+		address,
+		tel,
+		bankname,
+		bankno,
+		sellpid,
+		cliid,
+		itemname,
+		price,
+		username,
+		cztime,
+		remark
+	</sql>
+
+	<!-- 获取所有数据 -->
+	<select id="findAllList" parameterType="pd" resultType="pd" >
+		select
+			t_client.cliid,
+			csname,
+			clifname,
+			clisname,
+			clino,
+			invid,
+			tname,
+			taxno,
+			address,
+			tel,
+			bankname,
+			bankno
+		from
+			t_client,t_taxinfo
+		WHERE t_client.cliid=t_taxinfo.cliid
+		GROUP BY t_client.cliid
+	</select>
+
+	<select id="getByClifname" parameterType="pd" resultType="pd">
+		SELECT * FROM t_client WHERE clifname=#{clifname} limit 1
+	</select>
+
+	<!--通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select
+		t_client.cliid,
+		csname,
+		clifname,
+		clisname,
+		clino,
+		invid,
+		tname,
+		taxno,
+		address,
+		tel,
+		bankname,
+		bankno
+		from
+		t_client,t_taxinfo
+		where t_client.cliid=#{cliid} AND t_client.cliid=t_taxinfo.Cliid
+	</select>
+	<select id="findSellpById" parameterType="pd" resultType="pd">
+		select
+			*
+		from
+		t_client,t_sellp
+		where t_client.cliid=#{cliid} AND t_client.cliid=t_sellp.cliid
+	</select>
+
+	<!-- 删除客户 -->
+	<delete id="deleteClient" parameterType="pd" flushCache="false">
+		delete from <include refid="tableName"></include>
+		where
+			t_client.cliid=#{cliid}
+	</delete>
+
+	<!-- 删除客户 -->
+	<delete id="deleteSellpById" parameterType="pd" flushCache="false">
+		delete from t_sellp
+		where
+			sellpid=#{sellpid}
+	</delete>
+
+	<!-- 查找下拉框的公司简称 -->
+	<select id="findCsname" parameterType="pd" resultType="pd">
+		SELECT DISTINCT csname from t_subcom
+	</select>
+
+	<!-- 客户编码预警 -->
+	<select id="findClino" parameterType="pd" resultType="pd">
+		SELECT clino FROM t_client WHERE clino=#{clino}
+	</select>
+
+	<!-- 客户全称预警 -->
+	<select id="findClifname" parameterType="pd" resultType="pd">
+		SELECT supfname FROM t_supplier WHERE supfname=#{supfname}
+	</select>
+
+	<!--编辑 -->
+	<update id="updateClientById" parameterType="pd">
+		update
+		t_client
+		set
+		csname=#{csname},
+		clifname=#{clifname} ,
+		clisname=#{clisname},
+		clino=#{clino}
+		where
+		cliid=#{cliid}
+	</update>
+	<update id="updateSellpById" parameterType="pd">
+
+		UPDATE t_sellp
+
+		SET
+			itemname=#{itemname},
+			price=#{price},
+			username=#{username},
+			cztime=#{cztime},
+			remark=#{remark}
+		WHERE 	sellpid=#{sellpid}
+	</update>
+	<update id="updateTaxinfoById" parameterType="pd">
+		update
+		t_taxinfo
+		set
+		tname=#{tname},
+		taxno=#{taxno} ,
+		address=#{address},
+		tel=#{tel},
+		bankname =#{bankname},
+		bankno =#{bankno}
+		where
+		cliid=#{cliid}
+	</update>
+
+	<!--新增Client -->
+	<insert id="insertClient" useGeneratedKeys="true" keyProperty="cliid" parameterType="pd">
+		insert into
+		t_client
+		(
+		csname,
+		clifname,
+		clisname,
+		clino
+		) values (
+		#{csname},
+		#{clifname},
+		#{clisname},
+		#{clino}
+		)
+	</insert>
+
+	<!--新增Taxinfo -->
+	<insert id="insertTaxinfo" useGeneratedKeys="true" keyProperty="cliid" parameterType="pd">
+		<selectKey keyProperty="cliid" order="AFTER" resultType="java.lang.Long">
+			select last_insert_id() AS cliid
+		</selectKey>
+		insert into
+		t_taxinfo
+		(
+		cliid,
+		tname,
+		taxno,
+		address,
+		tel,
+		bankname,
+		bankno
+		) values (
+		#{cliid},
+		#{tname},
+		#{taxno},
+		#{address},
+		#{tel},
+		#{bankname},
+		#{bankno}
+		)
+	</insert>
+
+	<!--新增Sellp -->
+	<insert id="insertSellp" parameterType="pd">
+
+		insert into
+		t_sellp
+		(
+		cliid,
+		itemname,
+		price,
+		username,
+		cztime,
+		remark
+		) values
+		(
+		#{cliid},
+		#{itemname},
+		#{price},
+		#{username},
+		#{cztime},
+		#{remark}
+		)
+
+	</insert>
+</mapper>

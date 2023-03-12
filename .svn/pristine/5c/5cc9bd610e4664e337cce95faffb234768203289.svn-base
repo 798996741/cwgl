@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="CompanyMapper">
+
+	<!--<resultMap type="com.fh.pojo.tbsubcom" id="subComMap">-->
+		<!--<id column="subid" property="subid" jdbcType="INTEGER"/>-->
+		<!--<result column="cfname" property="cfname" jdbcType="VARCHAR"/>-->
+		<!--<result column="csname" property="csname" jdbcType="VARCHAR"/>-->
+		<!--<result column="cno" property="cno" jdbcType="VARCHAR"/>-->
+		<!--<result column="username" property="username" jdbcType="VARCHAR"/>-->
+		<!--<result column="cztime" property="cztime"/>-->
+		<!--<association property="tbtaxinfoList" javaType="com.fh.pojo.tbtaxinfo" autoMapping="true">-->
+			<!--<id column="invid" property="invid" jdbcType="INTEGER"/>-->
+			<!--<result column="subid" property="subid" jdbcType="INTEGER"/>-->
+			<!--<result column="tname" property="tname"  jdbcType="VARCHAR"/>-->
+			<!--<result column="taxno" property="taxno"  jdbcType="VARCHAR"/>-->
+			<!--<result column="address" property="address"  jdbcType="VARCHAR"/>-->
+			<!--<result column="tel" property="tel"  jdbcType="VARCHAR"/>-->
+			<!--<result column="bankname" property="bankname"  jdbcType="VARCHAR"/>-->
+			<!--<result column="bankno" property="bankno"  jdbcType="VARCHAR"/>-->
+		<!--</association>-->
+		<!--<association property="tbbankinfoList" javaType="com.fh.pojo.tbbankinfo" autoMapping="true">-->
+			<!--<id column="bid" property="bid" jdbcType="INTEGER"/>-->
+			<!--<result column="subid" property="subid" jdbcType="INTEGER"/>-->
+			<!--<result column="bname" property="bname"  jdbcType="VARCHAR"/>-->
+			<!--<result column="bno" property="bno"  jdbcType="VARCHAR"/>-->
+		<!--</association>-->
+	<!--</resultMap>-->
+
+
+
+	<sql id="tableName">
+		t_bankinfo,t_subcom,t_taxinfo
+	</sql>
+
+	<!-- 字段 -->
+	<sql id="Field">
+		t_subcom.subid,
+ 		cfname,
+ 		csname,
+ 		cno,
+ 		username,
+ 		cztime,
+ 		invid,
+ 		tname,
+ 		taxno,
+ 		address,
+ 		tel,
+ 		bankname,
+ 		bankno,
+ 		bid,
+ 		bname,
+ 		bno,
+ 		username,
+ 		cztime
+	</sql>
+
+	
+	<!-- 查找所有信息 -->
+	<select id="findAllList" parameterType="pd" resultType="pd">
+		select
+			t_subcom.subid,
+			cfname,
+			csname,
+			cno,
+			username,
+			cztime,
+			invid,
+			tname,
+			taxno,
+			address,
+			tel,
+			bankname,
+			bankno,
+			username,
+			cztime
+		from
+			t_subcom,t_taxinfo
+		where t_subcom.subid=t_taxinfo.subid
+		GROUP BY t_subcom.subid
+	</select>
+	
+	<!--通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select *
+		 from
+			t_subcom,t_taxinfo
+		 where t_subcom.subid=#{subid} and t_subcom.subid=t_taxinfo.subid
+	</select>
+	<select id="findBankById" parameterType="pd" resultType="pd">
+		select
+		t_subcom.subid,
+		bid,
+ 		bname,
+ 		bno
+		from
+		t_subcom,t_bankinfo
+		where t_subcom.subid=#{subid} AND t_subcom.subid=t_bankinfo.subid
+	</select>
+	
+	<select id="findCno" parameterType="pd" resultType="pd" >
+		SELECT cno from t_subcom WHERE cno=#{cno}
+
+	</select>
+	
+	<!--新增subcom -->
+	<insert id="insertCompany" useGeneratedKeys="true" keyProperty="subid" parameterType="pd">
+		insert into
+			t_subcom
+		(
+		cfname,
+		csname,
+		cno,
+		username,
+		cztime
+		) values (
+			#{cfname},
+			#{csname},
+			#{cno},
+			#{username},
+			#{cztime}
+		)
+	</insert>
+
+	<!--新增Taxinfo -->
+	<insert id="insertTaxinfo" useGeneratedKeys="true" keyProperty="subid" parameterType="pd">
+		<selectKey keyProperty="subid" order="AFTER" resultType="java.lang.Long">
+			select last_insert_id() AS subid
+		</selectKey>
+		insert into
+		t_taxinfo
+		(
+		subid,
+		tname,
+		taxno,
+		address,
+		tel,
+		bankname,
+		bankno
+		) values (
+		#{subid},
+		#{tname},
+		#{taxno},
+		#{address},
+		#{tel},
+		#{bankname},
+		#{bankno}
+		)
+	</insert>
+
+	<!--新增Bankinfo -->
+	<insert id="insertBankinfo" parameterType="pd">
+
+		insert into
+		t_bankinfo
+		(
+		subid,
+		bname,
+		bno
+		) values
+		(
+		#{subid},#{bname},#{bno}
+		)
+
+	</insert>
+
+	<!--删除Bank-->
+	<delete id="deleteBankById" parameterType="pd">
+		delete from
+			t_bankinfo
+		where bid=#{bid}
+	</delete>
+	
+	<!--删除Company-->
+	<delete id="deleteCompanyById" parameterType="pd">
+		delete from 
+			t_subcom
+		where subid=#{subid}
+	</delete>
+	
+	<!--编辑 -->
+	<update id="updateCompanyById" parameterType="pd">
+		update 
+			t_subcom
+		set 
+			cfname=#{cfname},
+			csname=#{csname} ,
+			cno=#{cno},
+			username=#{username},
+			cztime =#{cztime}
+		where 
+			subid=#{subid}
+	</update>
+	<update id="updateBankInfoById" parameterType="pd">
+
+			UPDATE t_bankinfo
+			SET
+					subid=#{subid},
+					bname=#{bname},
+					bno = #{bno}
+				where bid=#{bid}
+	</update>
+	<update id="updateTxaInfoById" parameterType="pd">
+	update
+		t_taxinfo
+	set
+		tname=#{tname},
+		taxno=#{taxno} ,
+		address=#{address},
+		tel=#{tel},
+		bankname =#{bankname},
+		bankno =#{bankno}
+	where
+		subid=#{subid}
+	</update>
+	
+
+	
+</mapper>

@@ -1,0 +1,33 @@
+package com.fh.service.app.impl;
+
+import com.fh.dao.DAO;
+import com.fh.service.app.LeaveService;
+import com.fh.util.PageData;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+
+@Service("leaveServiceImpl")
+public class LeaveServiceImpl implements LeaveService {
+    @Resource(name = "daoSupport")
+    private DAO dao;
+    @Override
+    public PageData findLeaveById(PageData pd) throws Exception {
+        return (PageData) dao.findForList("LeaveMapper.findLeaveById",pd);
+    }
+
+    @Override
+    public PageData findUserByUserid(PageData pd) throws Exception {
+        return (PageData) dao.findForList("LeaveMapper.findUserByUserid",pd);
+    }
+
+    @Override
+    public void insertLeave(PageData pd) throws Exception {
+        dao.save("LeaveMapper.insertLeave",pd);
+    }
+
+    @Override
+    public void updateLeave(PageData pd) throws Exception {
+        dao.update("LeaveMapper.updateLeave",pd);
+    }
+}

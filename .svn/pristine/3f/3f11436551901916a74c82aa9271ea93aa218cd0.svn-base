@@ -1,0 +1,17 @@
+package com.fh.utils;
+/**
+ * 微信参数
+ * @author
+ *
+ */
+public class WeiXinParamesUtil {
+    //token
+    public final static String token = "nSWt01IFz5exyG6wxMIVe";
+    // encodingAESKey
+    public final static String encodingAESKey = "fZXWJ9MipEDoyFDKdXQjrynyX1gEYviUKGqRWQhNSeN";
+    //企业ID
+    public final static String corpId = "wwe1de579339958660";
+    //应用的凭证密钥
+    public final static String corpsecret = "DN56liP41YlzMLc1qpzQuPTo1Y7s69ulkRWdbkZLrMs";
+
+}

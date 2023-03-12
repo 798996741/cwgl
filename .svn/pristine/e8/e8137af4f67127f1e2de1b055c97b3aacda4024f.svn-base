@@ -1,0 +1,146 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%
+    String path = request.getContextPath();
+    String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta
+            name="viewport"
+            content="width=device-width, initial-scale=1.0,maximum-scale=1, minimum-scale=1, user-scalable=no"
+    />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>我要请假</title>
+    <script src="static/js/weixin/lib-flexible.js"></script>
+    <link rel="stylesheet" href="static/css/weixin/weui.css" />
+    <script src="https://cdn.bootcss.com/zepto/1.2.0/zepto.js"></script>
+    <script src="http://39.106.15.227/js/fx.js"></script>
+    <script src="http://39.106.15.227/js/fx_methods.js"></script>
+    <script src="https://res.wx.qq.com/open/libs/weuijs/1.2.1/weui.min.js"></script>
+    <!-- 企业微信js-sdk -->
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.2.0.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="static/js/weixin/auth.js"></script>
+</head>
+<body>
+<div class="page form_page js_show">
+    <form id="form">
+        <div class="weui-form__control-area">
+            <div class="weui-cells__group weui-cells__group_form">
+                <div class="weui-cells__title">我要请假</div>
+                <div class="weui-cells weui-cells_form">
+                    <div
+                            class="weui-cell weui-cell_access weui-cell_select weui-cell_select-after"
+                    >
+                        <div class="weui-cell__hd">
+                            <label class="weui-label" for="showPicker">请假类型</label>
+                        </div>
+                        <div class="weui-cell__bd" id="showPicker">&nbsp;&nbsp;</div>
+                        <input
+                                type="hidden"
+                                required
+                                pattern="REG_leaveType"
+                                name="leavetype"
+                                emptyTips="请选择请假类型"
+                                value="xxx"
+                                id="leaveType"
+                        />
+                    </div>
+                    <div
+                            class="weui-cell weui-cell_access weui-cell_select weui-cell_select-after"
+                    >
+                        <div class="weui-cell__hd">
+                            <label class="weui-label">开始时间</label>
+                        </div>
+                        <div class="weui-cell__bd" id="showPickerStart">&nbsp;</div>
+                        <input
+                                type="hidden"
+                                required
+                                pattern="REG_startTime"
+                                name="starttime"
+                                emptyTips="请选择开始时间"
+                                value="xxx"
+                                id="startTime"
+                        />
+                    </div>
+                    <div
+                            class="weui-cell weui-cell_access weui-cell_select weui-cell_select-after"
+                    >
+                        <div class="weui-cell__hd">
+                            <label class="weui-label">结束时间</label>
+                        </div>
+                        <div class="weui-cell__bd" id="showPickerEnd">&nbsp;</div>
+                        <input
+                                type="hidden"
+                                required
+                                pattern="REG_endTime"
+                                name="endtime"
+                                emptyTips="请选择结束时间"
+                                value="xxx"
+                                id="endTime"
+                        />
+                    </div>
+                    <div class="weui-cell weui-cell_disabled">
+                        <div class="weui-cell__hd">
+                            <label class="weui-label">请假时长</label>
+                        </div>
+                        <div class="weui-cell__bd">
+                            <input
+                                    class="weui-input"
+                                    id="leaveDays"
+                                    name="leavedays"
+                                    value=""
+                                    disabled
+                            />
+                        </div>
+                    </div>
+                    <div class="weui-cell">
+                        <div class="weui-cell__hd">
+                            <label class="weui-label">请假事由</label>
+                        </div>
+                        <div class="weui-cell__bd">
+                  <textarea
+                          class="weui-textarea"
+                          placeholder="请输入请假事由"
+                          required
+                          name="leavereason"
+                          pattern="REG_leaveReason"
+                          value=""
+                          emptyTips="请输入请假事由"
+                          id="leaveReason"
+                          rows="3"
+                  ></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="weui-form__opr-area">
+            <a class="weui-btn weui-btn_primary " href="javascript:" id="button">
+                提交
+            </a>
+        </div>
+    </form>
+    <div id="loadingToast" style="opacity: 0; display: none;">
+        <div class="weui-mask_transparent"></div>
+        <div class="weui-toast">
+            <p class="weui-toast__content">正在提交中...</p>
+        </div>
+    </div>
+    <div id="js_toast" style="display: none;">
+        <div class="weui-mask_transparent"></div>
+        <div class="weui-toast">
+            <i class="weui-icon-success-no-circle weui-icon_toast"></i>
+            <p class="weui-toast__content">已提交</p>
+        </div>
+    </div>
+</div>
+<script src="static/js/weixin/submit.js"></script>
+</body>
+</html>

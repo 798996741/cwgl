@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="LeaveMapper">
+
+    <select id="findLeaveById" resultType="pd" parameterType="pd">
+        SELECT * from app_leave WHERE leaveid=#{leaveid}
+    </select>
+    <select id="findLastLeave" resultType="pd" parameterType="pd">
+        SELECT * from app_leave ORDER BY leaveid DESC limit 0,1
+    </select>
+    <select id="findUserByUserid" resultType="pd" parameterType="pd">
+        SELECT * FROM app_user WHERE name=#{name}
+    </select>
+    <select id="findUser" resultType="pd" parameterType="pd">
+        SELECT * FROM app_user
+    </select>
+    <select id="findName" resultType="pd" parameterType="pd">
+        SELECT name FROM app_user
+    </select>
+    <select id="findDepartment" resultType="pd" parameterType="pd">
+        SELECT name FROM app_department WHERE id=#{id}
+    </select>
+    <insert id="insertLeave" parameterType="pd">
+        INSERT INTO app_leave(
+        proposer,
+        leavetype,
+        starttime,
+        endtime,
+        leavedays,
+        leavereason,
+        apptime,
+
+        auditor,
+        auditype,
+        remark
+        )VALUES (
+        #{proposer},
+        #{leavetype},
+        #{starttime},
+        #{endtime},
+        #{leavedays},
+        #{leavereason},
+        #{apptime},
+
+        #{auditor},
+        #{auditype},
+        #{remark}
+        )
+    </insert>
+    <update id="updateLeave" parameterType="pd">
+        UPDATE app_leave
+        SET
+        auditype=#{auditype},
+        remark=#{remark}
+        WHERE leaveid=#{leaveid}
+    </update>
+    
+</mapper>

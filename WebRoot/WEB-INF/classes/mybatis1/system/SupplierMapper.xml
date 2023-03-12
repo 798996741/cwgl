@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SupplierMapper">
+
+	<sql id="tableName">
+		t_supplier,t_puechase,t_taxinfo
+	</sql>
+
+	<!-- 字段 -->
+	<sql id="Field">
+		t_supplier.supid,
+		csname,
+		supfname,
+		supsname,
+		supno,
+		invid,
+		tname,
+		taxno,
+		address,
+		tel,
+		bankname,
+		bankno,
+		purid,
+		itemname,
+		price,
+		username,
+		cztime,
+		remark
+	</sql>
+
+	
+	<!-- 查找所有信息 -->
+	<select id="findAllList" parameterType="pd" resultType="pd">
+		select
+			t_supplier.supid,
+			csname,
+			supfname,
+			supsname,
+			supno,
+			invid,
+			tname,
+			taxno,
+			address,
+			tel,
+			bankname,
+			bankno
+		from
+			t_supplier,t_taxinfo
+		WHERE t_supplier.supid=t_taxinfo.supid
+	</select>
+	
+	<!--通过ID获取数据 -->
+	<select id="findById" parameterType="pd" resultType="pd">
+		select
+		t_supplier.supid,
+		csname,
+		supfname,
+		supsname,
+		supno,
+		invid,
+		tname,
+		taxno,
+		address,
+		tel,
+		bankname,
+		bankno
+		from
+			t_supplier,t_taxinfo
+		 where t_supplier.supid=#{supid} AND t_supplier.supid=t_taxinfo.supid
+	</select>
+	<select id="findPurcById" parameterType="pd" resultType="pd">
+		select
+		*
+		from
+		t_purchase,t_supplier
+		where t_supplier.supid=#{supid} AND t_purchase.supid=t_supplier.supid
+	</select>
+
+	<!-- 查找下拉框的公司简称 -->
+	<select id="findCsname" parameterType="pd" resultType="pd">
+		SELECT DISTINCT csname from t_subcom
+	</select>
+
+	<!-- 供应商编码预警 -->
+	<select id="findSupno" parameterType="pd" resultType="pd">
+		SELECT supno FROM t_supplier WHERE supno=#{supno}
+	</select>
+
+	<select id="findSupfname" parameterType="pd" resultType="pd">
+		SELECT clifname FROM t_client WHERE clifname=#{clifname}
+	</select>
+
+	<select id="getBySupfname" parameterType="pd" resultType="pd">
+		SELECT * FROM t_supplier WHERE supfname=#{supfname} limit 1
+	</select>
+	
+	<!--新增supplier-->
+	<insert id="insertSupplier" useGeneratedKeys="true" keyProperty="supid" parameterType="pd">
+		insert into
+			t_supplier
+		(
+			csname,
+			supfname,
+			supsname,
+			supno
+		) values (
+			#{csname},
+			#{supfname},
+			#{supsname},
+			#{supno}
+		)
+	</insert>
+
+	<!--新增bankinfo -->
+	<insert id="insertTaxinfo" useGeneratedKeys="true" keyProperty="supid" parameterType="pd">
+		<selectKey keyProperty="supid" order="AFTER" resultType="java.lang.Long">
+			select last_insert_id()
+		</selectKey>
+		insert into
+		t_taxinfo
+		(
+		supid,
+		tname,
+		taxno,
+		address,
+		tel,
+		bankname,
+		bankno
+		) values (
+		#{supid},
+		#{tname},
+		#{taxno},
+		#{address},
+		#{tel},
+		#{bankname},
+		#{bankno}
+		)
+	</insert>
+
+	<!--新增Purchase -->
+	<insert id="insertPurchase" parameterType="pd">
+		insert into
+		t_purchase
+		(
+			supid,
+			itemname,
+			price,
+			username,
+			cztime,
+			remark
+		) values
+		(
+		#{supid},
+		#{itemname},
+		#{price},
+		#{username},
+		#{cztime},
+		#{remark}
+		)
+	</insert>
+
+	
+	<!--删除-->
+	<delete id="deleteSupplierById" parameterType="pd">
+		delete from 
+			t_supplier
+		where supid=#{supid}
+	</delete>
+
+	<!--删除-->
+	<delete id="deletePurById" parameterType="pd">
+		delete from
+		t_purchase
+		where purid=#{purid}
+	</delete>
+	
+	<!--编辑 -->
+	<update id="updateSupplierById" parameterType="pd">
+		update 
+			t_supplier
+		set
+			csname=#{csname},
+			supfname=#{supfname} ,
+			supsname=#{supsname},
+			supno=#{supno}
+		where 
+			supid=#{supid}
+	</update>
+	<update id="updatePurchaseById" parameterType="pd">
+
+		update
+			t_purchase
+		SET
+			itemname=#{itemname},
+			price=#{price},
+			username=#{username},
+			cztime=#{cztime},
+			remark=#{remark}
+
+		where
+			purid=#{purid}
+
+	</update>
+	<update id="updateTxaInfoById" parameterType="pd">
+	update
+		t_taxinfo
+	set
+		tname=#{tname},
+		taxno=#{taxno} ,
+		address=#{address},
+		tel=#{tel},
+		bankname =#{bankname},
+		bankno =#{bankno}
+	where
+		supid=#{supid}
+</update>
+
+	
+</mapper>

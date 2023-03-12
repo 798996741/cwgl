@@ -1,0 +1,18 @@
+package com.fh.service.manage.reimfy;
+
+import com.fh.pojo.tbreimfy;
+import com.fh.util.PageData;
+
+import java.util.List;
+
+public interface ReimfyService {
+    List<tbreimfy> findReimfy(PageData pd) throws Exception;
+    List<tbreimfy> findOneClass(PageData pd) throws Exception;
+    List<tbreimfy> findTwoClass(PageData pd) throws Exception;
+    tbreimfy findReimfyById(PageData pd) throws Exception;
+    void updateReimfy(PageData pd) throws Exception;
+    void insertReimfy(PageData pd) throws Exception;
+    void deleteReimfy(PageData pd) throws Exception;
+
+
+}

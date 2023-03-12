@@ -1,0 +1,31 @@
+package com.fh.dao.manage;
+
+public interface SupplierDao {
+    public Object findAllList(String str, Object obj);
+
+    public Object findById(String str, Object obj);
+
+    public Object findPuecById(String str, Object obj);
+
+    public Object findCsname(String str, Object obj);
+
+    public Object findSupno(String str, Object obj);
+
+    public Object insertSupplier(String str, Object obj);
+
+    public Object insertTxaInfo(String str, Object obj);
+
+    public Object insertPurchase(String str, Object obj);
+
+    public Object deleteSupplierById(String str, Object obj);
+
+    public Object deletePurById(String str, Object obj);
+
+    public Object updateSupplierById(String str, Object obj);
+
+    public Object updatePurchaseById(String str, Object obj);
+
+    public Object updateTxaInfoById(String str, Object obj);
+
+    Object findSupfname(String str, Object obj);
+}

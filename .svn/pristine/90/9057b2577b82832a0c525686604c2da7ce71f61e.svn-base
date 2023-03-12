@@ -1,0 +1,342 @@
+@media screen and (max-width: 1920px) {
+  body {
+    overflow-y: hidden;
+  }
+
+  .sidebar-menu>li:hover>.treeview-menu {
+    top: 41px;
+  }
+
+  .skin-blue .main-header .navbar .nav>li>a,
+  .seat-middle-r table tbody tr td,
+  .seat-page-l,
+  .seat-page-r-li li {
+    font-size: 12px;
+  }
+
+  .seat-nav,
+  .skin-blue .sidebar-menu>li>a,
+  .treeview span,
+  .seat-middle-l li,
+  .seat-middle-r table thead tr th,
+  .seat-tab li a {
+    font-size: 12px;
+    font-weight: bold;
+  }
+
+  .sidebar-menu>li>a {
+    padding: 13px;
+  }
+
+  .seat-middle-l li {
+    line-height: 40px;
+  }
+
+  .seat-middle-l li,
+  .seat-middle-r table thead tr,
+  .seat-middle-r table tbody tr {
+    height: 36px;
+  }
+
+  .seat-middle-l {
+    width: 75px;
+  }
+
+  /* 
+  .seat-middle-r {
+    width: 1345px;
+  }
+
+  .seat-middle-nr {
+    height: 480px;
+    width: 1345px;
+  }
+
+  .seat-middle {
+    width: 1345px;
+  }
+
+  .content-top {
+    width: 1345px;
+  }
+
+  .content-top-1 {
+    width: 1345px;
+  }
+
+  .content-top-2 {
+    width: 1345px;
+  }
+
+  .TEtable-title {
+    width: 1345px;
+  } */
+
+  .seat-middle-r {
+    width: 100%;
+    font-size: 12px;
+  }
+
+  .seat-middle-nr {
+    height: 480px;
+    width: 100%;
+  }
+
+  .seat-middle {
+    width: 100%;
+  }
+
+  .content-top {
+    width: 100%;
+  }
+
+  .content-top-1 {
+    width: 100%;
+  }
+
+  .content-top-2 {
+    width: 100%;
+  }
+
+  .TEtable-title {
+    width: 100%;
+  }
+
+  .content {
+    padding: 10px 15px;
+  }
+
+
+  .seat-tab {
+    height: 36px;
+  }
+
+  .seat-tab li {
+    height: 36px;
+    line-height: 36px;
+  }
+
+}
+
+
+@media screen and (max-width: 1366px) {
+
+  body {
+    overflow-y: hidden;
+  }
+
+  .seat-middle-l {
+    width: 73px;
+  }
+
+  /* .seat-middle-r {
+    width: 1173px;
+  }
+
+  .seat-middle-nr {
+    height: 430px;
+    width: 1173px;
+  }
+
+  .seat-middle {
+    width: 1173px;
+  }
+
+  .content-top {
+    width: 1173px;
+  }
+
+  .content-top-1 {
+    width: 1173px;
+  }
+
+  .content-top-2 {
+    width: 1173px;
+  }
+
+  .TEtable-title {
+    width: 1173px;
+  } */
+  .seat-middle-r {
+    width: 100%;
+    font-size: 12px;
+  }
+
+  .seat-middle-nr {
+    height: 430px;
+    width: 100%;
+  }
+
+  .seat-middle {
+    width: 100%;
+  }
+
+  .content-top {
+    width: 100%;
+  }
+
+  .content-top-1 {
+    width: 100%;
+  }
+
+  .content-top-2 {
+    width: 100%;
+  }
+
+  .TEtable-title {
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 1280px) {
+
+  body {
+    overflow-y: hidden;
+  }
+
+  .seat-middle-l {
+    width: 70px;
+  }
+
+  /* .seat-middle-r {
+    width: 1085px;
+  }
+
+  .seat-middle-nr {
+    height: 380px;
+    width: 1085px;
+  }
+
+  .seat-middle {
+    width: 1085px;
+  }
+
+  .content-top {
+    width: 1085px;
+  }
+
+  .content-top-1 {
+    width: 1085px;
+  }
+
+  .content-top-2 {
+    width: 1085px;
+  }
+
+  .TEtable-title {
+    width: 1085px;
+  } */
+  .seat-middle-r {
+    width: 100%;
+    font-size: 12px;
+  }
+
+  .seat-middle-nr {
+    height: 380px;
+    width: 100%;
+  }
+
+  .seat-middle {
+    width: 100%;
+  }
+
+  .content-top {
+    width: 100%;
+  }
+
+  .content-top-1 {
+    width: 100%;
+  }
+
+  .content-top-2 {
+    width: 100%;
+  }
+
+  .TEtable-title {
+    width: 100%;
+  }
+}
+
+/* @media screen and (max-width: 1680px) {
+  .content {
+    height: 800px;
+    overflow-x: auto;
+  }
+
+  .seat-middle-nr {
+    height: 700px;
+  }
+
+  .seat-middle-one-top-m {
+    width: 185px;
+  }
+
+  .login-middle {
+    right: 11.5%;
+    width: 25%;
+  }
+
+  .treeview-size {
+    color: #fff;
+  }
+
+  .treeview-size-active {
+    color: #8aa4af;
+  }
+}
+
+@media screen and (max-width: 1600px) {
+  .content {
+    height: 650px;
+  }
+
+  .seat-middle-nr {
+    height: 550px;
+  }
+
+  .seat-middle-one-top-m {
+    width: 175px;
+  }
+
+  .login-middle {
+    height: 64%;
+  }
+}
+
+@media screen and (max-width: 1440px) {
+  .seat-middle-one {
+    background: #fff;
+    height: 180px;
+    border-radius: 15px;
+    padding: 0 !important;
+    margin-bottom: 15px;
+    float: left;
+    width: 48%;
+    margin-right: 1%;
+    margin-left: 1%;
+  }
+
+  .seat-middle-one-top-m {
+    width: 245px;
+  }
+
+  .login-middle {
+    height: 59%;
+    width: 26%;
+  }
+}
+
+@media screen and (max-width: 1366px) {
+  .content {
+    height: 570px;
+  }
+
+  .seat-middle-nr {
+    height: 420px;
+  }
+
+  .login-middle {
+    height: 69%;
+    top: 16.5%;
+  }
+} */

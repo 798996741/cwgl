@@ -1,0 +1,48 @@
+package com.fh.controller.app.test;
+
+import com.fh.pojo.massage.send.Text;
+import com.fh.pojo.massage.send.TextMessage;
+import com.fh.service.app.SendMessageService;
+import com.fh.utils.WeiXinParamesUtil;
+import com.fh.utils.WeiXinUtil;
+import org.junit.Test;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
+public class SendMessageTest {
+    //1.发送文本消息
+    @Test
+    public void testSendTextMessage() throws UnsupportedEncodingException {
+        //0.设置消息内容
+        String content1="你的快递已到，请携带工卡前往邮件中心领取。\n出发前可查看" +
+                "<a href=\"http://work.weixin.qq.com\">邮件中心视频实况" +
+                "</a>，聪明避开排队。";
+        URLDecoder urlDecoder = new URLDecoder();
+        String content =urlDecoder.decode(content1,"utf-8");
+        //1.创建文本消息对象
+        TextMessage message=new TextMessage();
+        //1.1非必需
+        message.setTouser("@AAAKunLin");  //不区分大小写
+        //textMessage.setToparty("1");
+        //txtMsg.setTotag(totag);
+        //txtMsg.setSafe(0);
+
+        //1.2必需
+        message.setMsgtype("text");
+        message.setAgentid(WeiXinParamesUtil.agentId);
+
+        Text text=new Text();
+        text.setContent(content);
+        message.setText(text);
+
+        //2.获取access_token:根据企业id和通讯录密钥获取access_token,并拼接请求url
+        String accessToken= WeiXinUtil.getAccessToken(WeiXinParamesUtil.corpId, WeiXinParamesUtil.agentSecret).getToken();
+        System.out.println("accessToken:"+accessToken);
+
+        //3.发送消息：调用业务类，发送消息
+        SendMessageService sms=new SendMessageService();
+        sms.sendMessage(accessToken, message);
+
+    }
+}

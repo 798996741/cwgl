@@ -1,0 +1,380 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%
+    String path = request.getContextPath();
+    String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base href="<%=basePath%>">
+    <!-- 下拉框 -->
+    <style>
+        ul li {
+            line-height: 30px;
+            list-style-type: none
+        }
+    </style>
+</head>
+<body class="no-skin">
+
+<!-- Horizontal Form -->
+<div>
+    <div class="box-header with-border">
+        <!-- <h3 class="box-title">用户添加</h3> -->
+    </div>
+    <div id="mask" class="mask">
+        <div id="darkmask" class="darkmask">
+            <div class="mask-top">
+                <span class="mask-top-size" style="letter-spacing: 3px;"><b>采购项目</b></span>
+                <img src="static/img/modal/delete_icon.png"
+                     style="width:22px;height:22px;margin-right: 25px;cursor: pointer;" data-dismiss="modal">
+            </div>
+            <div class="mask-main">
+                <form name="form_add" id="form_add">
+                    <%--<c:forEach items="${spList}" var="spList" begin="0" end="0">--%>
+                    <input type="hidden" name="supid" id="supid" value="${pd.supid}"/>
+                    <%--</c:forEach>--%>
+                    <div class="between-center">
+                        <div class="between-center padding-8px">
+                            <span class="mask-size  flex-row-between"><font style="color: red;">*</font>物品名称</span>
+                            <input type="text" name="itemname" id="itemname" autoComplete="off"
+                                   maxlength="32" placeholder="这里输入物品名称"
+                                   title="物品名称" class="mask-input width-250px"/>
+                        </div>
+                        <div class="between-center padding-8px">
+                            <span class="mask-size flex-row-between"><font style="color: red;">*</font>单&nbsp;&nbsp;&nbsp;&nbsp;价</span>
+                            <input type="text" name="price" id="price" autoComplete="off"
+                                   placeholder="这里输入单价" maxlength="64" title="单价" title="账号"
+                                   class="mask-input width-250px"/>
+                        </div>
+                    </div>
+                    <div class="between-center">
+                        <div class="between-center padding-8px">
+                            <span class="mask-size">备&nbsp;&nbsp;&nbsp;&nbsp;注</span>
+                            <input type="text" name="remark" id="remark" autoComplete="off"
+                                   maxlength="32" placeholder="这里输入备注"
+                                   title="备注" class="mask-input width-250px"/>
+                        </div>
+                    </div>
+
+                </form>
+                <div class="seat-middle" style="height: 270px;width: 100%;">
+                    <div class="seat-middle-r" style="width: 100%;">
+                        <form name="form_add2" id="form_add2">
+                            <table border="0" cellspacing="0" cellpadding="0">
+                                <thead>
+                                <tr>
+
+                                    <th class="center">编号</th>
+                                    <th class="center">物品名称</th>
+                                    <th class="center">单价</th>
+                                    <th class="center">备注</th>
+                                    <th class="center">录入人</th>
+                                    <th class="center">录入时间</th>
+                                    <th class="center">操作</th>
+
+
+                                </tr>
+                                </thead>
+                                <tbody>
+
+                                <c:choose>
+                                    <c:when test="${not empty spList}">
+                                        <%--<c:if test="${QX.cha == 1 }">--%>
+                                        <c:forEach items="${spList}" var="spList" varStatus="vs">
+                                            <input type="hidden" name="purid" id="purid" value="${spList.purid}"/>
+                                            <tr>
+                                                <td class="center">${vs.count }</td>
+                                                <td class="center">${spList.itemname }</td>
+                                                <td class="center">${spList.price }</td>
+                                                <td class="center">${spList.remark }</td>
+                                                <td class="center">${spList.username}</td>
+                                                <td class="center">${spList.cztime}</td>
+
+                                                <td>
+                                                    <div>
+
+                                                            <%--<c:if test="${QX.edit == 1 }">--%>
+                                                            <%--<a class="btn btn-mini btn-primary" onclick="edit();">编辑</a>--%>
+                                                            <%--</c:if>--%>&nbsp;&nbsp;&nbsp;&nbsp;
+                                                            <%--<c:if test="${QX.del == 1 }">--%>
+                                                                <i><img src="static/img/home/delete.png" onclick="del('${spList.purid}');"
+                                                                        href="javascript:void(0);" style="width:59px;height:25px;"></i>
+
+
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </c:forEach>
+                                    </c:when>
+                                </c:choose>
+                                </tbody>
+                            </table>
+                        </form>
+                    </div>
+
+                </div>
+                <div class="mask-button">
+                    <div class="mask-save">
+                        <span class="mask-button-size" id="btn" onclick="save();">新增</span></div>
+                    <div class="mask-close" data-dismiss="modal">
+                        <span class="mask-button-size" data-dismiss="modal">取消</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    //保存
+    $(document).ready(function () {
+
+        if ($("#user_id").val() != "") {
+            $("#loginname").attr("readonly", "readonly");
+            $("#loginname").css("color", "gray");
+        }
+    });
+
+    function save() {
+        if ($("#itemname").val() == "") {
+            $("#itemname").tips({
+                side: 3,
+                msg: '不能为空',
+                bg: '#AE81FF',
+                time: 3
+            });
+            $("#itemname").focus();
+            return false;
+        }
+        if ($("#price").val() == "") {
+            $("#price").tips({
+                side: 3,
+                msg: '不能为空',
+                bg: '#AE81FF',
+                time: 3
+            });
+            $("#price").focus();
+            return false;
+        } else if (!ismon($("#price").val())) {
+            $("#price").tips({
+                side: 3,
+                msg: '单价格式不正确',
+                bg: '#AE81FF',
+                time: 3
+            });
+            $("#price").focus();
+            return false;
+        }
+        $.ajax({
+            type: 'post',
+            data: $('#form_add').serialize(),
+            url: 'supplier/insertPurchase.do',
+            cache: false,
+            dataType: 'text',
+            success: function (data) {
+                if ("msg" != data) {
+                    // confirm("保存成功")
+                    // window.location.href = "company/findBankById.do?subid="+data;
+                    editPurch(${pd.supid})
+                } else {
+                    confirm("保存失败")
+                }
+            }
+        })
+        $(".mask-button-size").attr("onclick", "null");
+    }
+
+    function ismon(paymon) {
+        return (new RegExp(/(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/).test(paymon));
+    }
+
+    function editPurch(supplier_id) {
+        // top.jzts();
+        var winId = "supplierWin";
+        modals.openWin({
+            winId: winId,
+            title: '新增',
+            width: '900px',
+            url: '<%=basePath%>supplier/findPuecById.do?supid=' + supplier_id
+            /*, hideFunc:function(){
+                modals.info("hide me");
+            },
+            showFunc:function(){
+                modals.info("show me");
+            } */
+        });
+
+    }
+
+    function del(purid) {
+        if (confirm("确定要删除吗?")) {
+
+            var url = "<%=basePath%>supplier/deletePurById.do?purid=" + purid;
+            $.ajax({
+                type: 'post',
+                data: {purid: purid},
+                url: url,
+                cache: false,
+                dataType: 'text',
+                success: function (data) {
+                    if ("msg" != data) {
+                        // confirm("保存成功")
+                        // window.location.href = "company/findBankById.do?subid="+data;
+                        editPurch(${pd.supid})
+                    } else {
+                        confirm("删除失败")
+                    }
+                }
+            })
+        }
+    }
+
+    //修改
+    function edit() {
+        $.ajax({
+            type: 'post',
+            data: $('#form_add2').serialize(),
+            url: 'supplier/updatePurchase.do',
+            cache: false,
+            dataType: 'text',
+            success: function (data) {
+                if ("msg" != data) {
+                    // confirm("保存成功")
+                    // window.location.href = "company/findBankById.do?subid="+data;
+                    editPurch(${pd.supid})
+                } else {
+                    confirm("保存失败")
+                }
+            }
+        })
+
+    }
+
+    //保存
+    // function save() {
+    //     //alert($("#role_id1").val());
+    //
+    //     if ($("#bname").val() == "") {
+    //         $("#bname").tips({
+    //             side: 3,
+    //             msg: '开户行不能为空',
+    //             bg: '#AE81FF',
+    //             time: 3
+    //         });
+    //         $("#bname").focus();
+    //         return false;
+    //     }
+    //     if ($("#bno").val() == "") {
+    //         $("#bno").tips({
+    //             side: 3,
+    //             msg: '银行账号不能为空',
+    //             bg: '#AE81FF',
+    //             time: 3
+    //         });
+    //         $("#bno").focus();
+    //         return false;
+    //     }
+    //
+    //
+    //         $("#form_add").submit();
+    //
+    //
+    //
+    //     }
+
+
+    // return false;
+
+    // if ($("#cno").val() == "") {
+    //     hasCno();
+    // } else {
+    //     $("#userForm_add").submit();
+    //     // $("#zhongxin").hide();
+    //     // $("#zhongxin2").show();
+    // }
+
+
+    function isphone(phone) {
+        return (new RegExp(/^(\(\d{3,4}\)|\d{3,4}-|\s)?\d{7,14}$/).test(phone));
+    }
+
+    //判断公司编号是否存在
+    function hasCno() {
+        var cno = $.trim($("#cno").val());
+        $.ajax({
+            type: "POST",
+            url: '<%=basePath%>conpany/hasCno.do',
+            data: {cno: cno, tm: new Date().getTime()},
+            dataType: 'json',
+            cache: false,
+            success: function (data) {
+                if ("success" == data.result) {
+                    $("#cno").submit();
+                    //$("#zhongxin").hide();
+                    //$("#zhongxin2").show();
+                } else {
+                    $("#cno").css("background-color", "#D16E6C");
+                    setTimeout("$('#cno').val('此公司编号已存在!')", 500);
+                }
+            }
+        });
+    }
+
+
+    //判断编码是否存在
+    function hasN(USERNAME) {
+        var NUM = $.trim($("#NUM").val());
+        $.ajax({
+            type: "POST",
+            url: '<%=basePath%>user/hasN.do',
+            data: {NUM: NUM, USERNAME: USERNAME, tm: new Date().getTime()},
+            dataType: 'json',
+            cache: false,
+            success: function (data) {
+                if ("success" != data.result) {
+                    $("#NUM").tips({
+                        side: 3,
+                        msg: '编号 ' + NUM + ' 已存在',
+                        bg: '#AE81FF',
+                        time: 3
+                    });
+                    $("#NUM").val('');
+                }
+            }
+        });
+    }
+
+    $(function () {
+        //下拉框
+        if (!ace.vars['touch']) {
+            $('.chosen-select').chosen({allow_single_deselect: true});
+            $(window)
+                .off('resize.chosen')
+                .on('resize.chosen', function () {
+                    $('.chosen-select').each(function () {
+                        var $this = $(this);
+                        $this.next().css({'width': $this.parent().width()});
+                    });
+                }).trigger('resize.chosen');
+            $(document).on('settings.ace.chosen', function (e, event_name, event_val) {
+                if (event_name != 'sidebar_collapsed') return;
+                $('.chosen-select').each(function () {
+                    var $this = $(this);
+                    $this.next().css({'width': $this.parent().width()});
+                });
+            });
+            $('#chosen-multiple-style .btn').on('click', function (e) {
+                var target = $(this).find('input[type=radio]');
+                var which = parseInt(target.val());
+                if (which == 2) $('#form-field-select-4').addClass('tag-input-style');
+                else $('#form-field-select-4').removeClass('tag-input-style');
+            });
+        }
+    });
+</script>
+</body>
+</html>

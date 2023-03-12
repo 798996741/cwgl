@@ -1,0 +1,80 @@
+package com.fh.pojo;
+
+public class tbreimfy {
+    private Long reimfyid;
+    private String oneclass;
+    private String twoclass;
+    private String classdec;
+    private String source;
+    private String username;
+    private String cztime;
+
+    @Override
+    public String toString() {
+        return "tbreimfy{" +
+                "reimfyid=" + reimfyid +
+                ", oneclass='" + oneclass + '\'' +
+                ", twoclass='" + twoclass + '\'' +
+                ", classdec='" + classdec + '\'' +
+                ", source='" + source + '\'' +
+                ", username='" + username + '\'' +
+                ", cztime='" + cztime + '\'' +
+                '}';
+    }
+
+    public Long getReimfyid() {
+        return reimfyid;
+    }
+
+    public void setReimfyid(Long reimfyid) {
+        this.reimfyid = reimfyid;
+    }
+
+    public String getOneclass() {
+        return oneclass;
+    }
+
+    public void setOneclass(String oneclass) {
+        this.oneclass = oneclass;
+    }
+
+    public String getTwoclass() {
+        return twoclass;
+    }
+
+    public void setTwoclass(String twoclass) {
+        this.twoclass = twoclass;
+    }
+
+    public String getClassdec() {
+        return classdec;
+    }
+
+    public void setClassdec(String classdec) {
+        this.classdec = classdec;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getCztime() {
+        return cztime;
+    }
+
+    public void setCztime(String cztime) {
+        this.cztime = cztime;
+    }
+}

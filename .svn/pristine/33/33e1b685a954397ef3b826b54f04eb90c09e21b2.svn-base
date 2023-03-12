@@ -1,0 +1,315 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%
+    String path = request.getContextPath();
+    String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+%>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <base href="<%=basePath%>">
+  <!-- 下拉框 -->
+  <style>
+    ul li {
+      line-height: 30px;
+      list-style-type: none
+    }
+  </style>
+</head>
+
+<body class="no-skin">
+
+  <!-- Horizontal Form -->
+  <%--<div class="box box-info">--%>
+  <!-- /.box-header -->
+  <!-- form start -->
+  <div>
+    <%--id="mask" class="mask"--%>
+    <%--<div class="box-header with-border">--%>
+    <%--</div>--%>
+    <div id="mask" class="mask">
+      <div id="darkmask" class="darkmask" style="margin-top: 250px;">
+        <div class="mask-top">
+          <span class="mask-top-size" style="letter-spacing: 3px;"><b>开户银行</b></span>
+          <img src="static/img/modal/delete_icon.png" style="width:22px;height:22px;margin-right: 25px;cursor: pointer;"
+            data-dismiss="modal">
+        </div>
+        <div class="mask-main">
+          <form name="form_add" id="form_add">
+
+            <%--<c:forEach items="${bList}" var="bList" begin="0" end="0">--%>
+            <input type="hidden" name="subid" id="subid" value="${pd.subid}" />
+            <%--</c:forEach>--%>
+            <div class="between-center">
+              <div class="between-center padding-8px">
+                <span class="mask-size flex-row-between">
+                  <font style="color: red;">*</font>开户行
+                </span>
+                <input type="text" name="bname" id="bname" autoComplete="off" maxlength="64" placeholder="这里输入开户行"
+                  title="开户行" class="mask-input width-250px" />
+              </div>
+              <div class="between-center padding-8px">
+                <span class="mask-size flex-row-between">
+                  <font style="color: red;">*</font>账&nbsp;&nbsp;&nbsp;&nbsp;号
+                </span>
+                <input type="text" name="bno" id="bno" autoComplete="off" placeholder="这里输入账号" maxlength="64" title="账号"
+                  class="mask-input width-250px" />
+              </div>
+            </div>
+
+
+          </form>
+          <div class="seat-middle">
+            <div class="seat-middle-r" style="width: 100%;height: 270px;">
+              <form name="form_add2" id="form_add2">
+                <table border="0" cellspacing="0" cellpadding="0">
+                  <thead>
+                    <tr>
+                      <th>编号</th>
+                      <th>开户行</th>
+                      <th>账号</th>
+                      <th>操作</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+
+                    <c:choose>
+                      <c:when test="${not empty bList}">
+                        <%--<c:if test="${QX.cha == 1 }">--%>
+
+                        <c:forEach items="${bList}" var="bList" varStatus="vs">
+                          <input type="hidden" name="bid" id="bid" value="${bList.bid}" />
+                          <input type="hidden" name="subid" id="subid" value="${bList.subid}" />
+                          <tr>
+                            <td>${vs.count}</td>
+                            <td>${bList.bname}</td>
+                            <td>${bList.bno }</td>
+                            <td>
+
+                              <i><img src="static/img/home/delete.png" onclick="del('${bList.bid}');"
+                                  href="javascript:void(0);" style="width:59px;height:25px;"></i>
+                            </td>
+                          </tr>
+                        </c:forEach>
+                      </c:when>
+                    </c:choose>
+                  </tbody>
+                </table>
+
+
+              </form>
+            </div>
+          </div>
+          <div class="mask-button">
+            <div class="mask-save"><span class="mask-button-size" id="btn" onclick="save();">新增</span></div>
+            <div class="mask-close" data-dismiss="modal">
+              <span class="mask-button-size" data-dismiss="modal">取消</span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+  </div>
+
+  <script type="text/javascript">
+    //保存
+    $(document).ready(function () {
+
+      if ($("#user_id").val() != "") {
+        $("#loginname").attr("readonly", "readonly");
+        $("#loginname").css("color", "gray");
+      }
+    });
+
+
+    function save() {
+      if ($("#bname").val() == "") {
+        $("#bname").tips({
+          side: 3,
+          msg: '开户行不能为空',
+          bg: '#AE81FF',
+          time: 3
+        });
+        $("#bname").focus();
+        return false;
+      }
+      if ($("#bno").val() == "") {
+        $("#bno").tips({
+          side: 3,
+          msg: '银行账号不能为空',
+          bg: '#AE81FF',
+          time: 3
+        });
+        $("#bno").focus();
+        return false;
+      }
+      $.ajax({
+        type: 'post',
+        data: $('#form_add').serialize(),
+        url: 'company/insertBankinfo.do',
+        cache: false,
+        dataType: 'text',
+        success: function (data) {
+          if ("msg" != data) {
+            // confirm("保存成功")
+            // window.location.href = "company/findBankById.do?subid="+data;
+            editBankinfo(${ pd.subid })
+          } else {
+            confirm("保存失败")
+          }
+        }
+      })
+      $(".mask-button-size").attr("onclick", "null");
+    }
+
+
+    function editBankinfo(subid) {
+      // top.jzts();
+      var winId = "companyWin";
+      modals.openWin({
+        winId: winId,
+        title: '新增',
+        width: '900px',
+        url: '<%=basePath%>company/findBankById.do?subid=' + subid
+        /*, hideFunc:function(){
+            modals.info("hide me");
+        },
+        showFunc:function(){
+            modals.info("show me");
+        } */
+      });
+
+    }
+
+    function del(bid) {
+      if (confirm("确定要删除吗?")) {
+
+        var url = "<%=basePath%>company/deleteBankById.do?bid=" + bid;
+        $.ajax({
+          type: 'post',
+          data: { bid: bid },
+          url: url,
+          cache: false,
+          dataType: 'text',
+          success: function (data) {
+            if ("msg" != data) {
+              // confirm("保存成功")
+              // window.location.href = "company/findBankById.do?subid="+data;
+              editBankinfo(${ pd.subid })
+            } else {
+              confirm("删除失败")
+            }
+          }
+        })
+      }
+    }
+
+    //修改
+
+    function edit() {
+      $.ajax({
+        type: 'get',
+        data: $('#form_add2').serialize(),
+        url: 'company/updateBankinfoById.do',
+        cache: false,
+        dataType: 'text',
+        success: function (data) {
+          if ("msg" != data) {
+            // confirm("保存成功")
+            // window.location.href = "company/findBankById.do?subid="+data;
+            editBankinfo(${ pd.subid })
+          } else {
+            confirm("修改失败")
+          }
+        }
+      });
+
+    }
+
+
+    function isphone(phone) {
+      return (new RegExp(/^(\(\d{3,4}\)|\d{3,4}-|\s)?\d{7,14}$/).test(phone));
+    }
+
+    //判断公司编号是否存在
+    function hasCno() {
+      var cno = $.trim($("#cno").val());
+      $.ajax({
+        type: "POST",
+        url: '<%=basePath%>company/hasCno.do',
+        data: { cno: cno },
+        dataType: 'json',
+        cache: false,
+        success: function (data) {
+          if ("success" == data.result) {
+            $("#cno").submit();
+            //$("#zhongxin").hide();
+            //$("#zhongxin2").show();
+          } else {
+            confirm('此编号已存在，请确认！')
+            return false;
+          }
+        }
+      });
+    }
+
+
+    //判断编码是否存在
+    function hasN(USERNAME) {
+      var NUM = $.trim($("#NUM").val());
+      $.ajax({
+        type: "POST",
+        url: '<%=basePath%>user/hasN.do',
+        data: { NUM: NUM, USERNAME: USERNAME, tm: new Date().getTime() },
+        dataType: 'json',
+        cache: false,
+        success: function (data) {
+          if ("success" != data.result) {
+            $("#NUM").tips({
+              side: 3,
+              msg: '编号 ' + NUM + ' 已存在',
+              bg: '#AE81FF',
+              time: 3
+            });
+            $("#NUM").val('');
+          }
+        }
+      });
+    }
+
+    $(function () {
+      //下拉框
+      if (!ace.vars['touch']) {
+        $('.chosen-select').chosen({ allow_single_deselect: true });
+        $(window)
+          .off('resize.chosen')
+          .on('resize.chosen', function () {
+            $('.chosen-select').each(function () {
+              var $this = $(this);
+              $this.next().css({ 'width': $this.parent().width() });
+            });
+          }).trigger('resize.chosen');
+        $(document).on('settings.ace.chosen', function (e, event_name, event_val) {
+          if (event_name != 'sidebar_collapsed') return;
+          $('.chosen-select').each(function () {
+            var $this = $(this);
+            $this.next().css({ 'width': $this.parent().width() });
+          });
+        });
+        $('#chosen-multiple-style .btn').on('click', function (e) {
+          var target = $(this).find('input[type=radio]');
+          var which = parseInt(target.val());
+          if (which == 2) $('#form-field-select-4').addClass('tag-input-style');
+          else $('#form-field-select-4').removeClass('tag-input-style');
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>

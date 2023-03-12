@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WXReimMapper">
+
+    <select id="thismonthbusi" parameterType="pd" resultType="pd">
+      SELECT *
+      FROM t_busiaudit
+      WHERE submitter=#{submitter}
+      and busi_sche='1'
+      and busi_managersche='1'
+      and date_format(subtime,'%Y-%m')=date_format(now(),'%Y-%m')
+      order by subtime desc
+    </select>
+
+    <select id="lastmonthbusi" parameterType="pd" resultType="pd">
+      SELECT *
+      FROM t_busiaudit
+      WHERE submitter=#{submitter}
+      and busi_sche='1'
+      and busi_managersche='1'
+      and date_format(subtime,'%Y-%m')=date_format(DATE_SUB(curdate(), INTERVAL 1 MONTH),'%Y-%m')
+      order by subtime desc
+    </select>
+
+    <select id="getcompany" resultType="pd" parameterType="pd">
+        select csname from t_subcom
+    </select>
+
+    <insert id="insertreimaudit" parameterType="pd">
+         INSERT INTO t_reimaudit(
+            uid,
+            subuserid,
+            company,
+            reim_code,
+            submitter,
+            submittime,
+            supauditor,
+            supauditime,
+            supsche,
+            deptauditor,
+            depttime,
+            deptsche,
+            managerauditor,
+            managertime,
+            managersche,
+            busi_code
+          )VALUES (
+            #{uid},
+            #{subuserid},
+            #{company},
+            #{reim_code},
+            #{submitter},
+            #{submittime},
+            #{supauditor},
+            #{supauditime},
+            #{supsche},
+            #{deptauditor},
+            #{depttime},
+            #{deptsche},
+            #{managerauditor},
+            #{managertime},
+            #{managersche},
+            #{busi_code}
+          )
+    </insert>
+
+    <insert id="insertreimlog" parameterType="pd">
+         INSERT INTO t_reimlog(
+            busi_project,
+            reason,
+            trip_mode,
+            busi_startcity,
+            busi_endcity,
+            busi_starttime,
+            busi_endtime,
+            busi_time,
+            billnum,
+            tripmon,
+            hostelmon,
+            mission,
+            realmon,
+            uid
+          )VALUES (
+            #{busi_project},
+            #{reason},
+            #{trip_mode},
+            #{busi_startcity},
+            #{busi_endcity},
+            #{busi_starttime},
+            #{busi_endtime},
+            #{busi_time},
+            #{billnum},
+            #{tripmon},
+            #{hostelmon},
+            #{mission},
+            #{realmon},
+            #{uid}
+          )
+    </insert>
+
+    <select id="getMaxAuditno" parameterType="pd" resultType="pd">
+		select max(reim_code) as maxauditno from t_reimaudit WHERE reim_code LIKE CONCAT('%',CONCAT(#{keywords}),'%')
+	</select>
+
+    <select id="supauditlist" parameterType="pd" resultType="pd">
+        select * from t_reimaudit where supauditor=#{supauditor}
+    </select>
+
+    <select id="subrecord" parameterType="pd" resultType="pd">
+        SELECT a.*,b.realmon FROM t_reimaudit a,(SELECT SUM(realmon) realmon,uid FROM t_reimlog GROUP BY uid) b WHERE a.uid=b.uid
+         <if test="submitter!=null and submitter!=''">
+             and FIND_IN_SET(#{submitter},a.submitter)
+         </if>
+        <if test="supauditor!=null and supauditor!=''">
+            and FIND_IN_SET(#{supauditor},a.supauditor)
+        </if>
+        <if test="managerauditor!=null and managerauditor!=''">
+            and FIND_IN_SET(#{managerauditor},a.managerauditor)
+        </if>
+        <if test="uid!=null and uid!=''">
+            and a.uid=#{uid}
+        </if>
+    </select>
+
+    <select id="reimauditdetails" parameterType="pd" resultType="pd">
+        select * from t_reimaudit where 1=1 and uid=#{uid}
+    </select>
+
+    <select id="reimlogdetails" parameterType="pd" resultType="pd">
+        select * from t_reimlog where 1=1 and uid=#{uid}
+    </select>
+
+    <update id="updatesupsche" parameterType="pd" >
+        update t_reimaudit
+        SET
+        supauditime=#{supauditime},
+        supsche=#{supsche},
+        supauditor=#{supauditor}
+        WHERE
+        id=#{id}
+    </update>
+
+    <update id="updatedeptsche" parameterType="pd" >
+        update t_reimaudit
+        SET
+        deptauditor=#{deptauditor},
+        depttime=#{depttime},
+        deptsche=#{deptsche}
+        WHERE
+        id=#{id}
+    </update>
+
+    <update id="updatemanagersche" parameterType="pd" >
+        update t_reimaudit
+        SET
+        managerauditor=#{managerauditor},
+        managertime=#{managertime},
+        managersche=#{managersche}
+        WHERE
+        id=#{id}
+    </update>
+
+    <select id="findreimaudit" parameterType="pd" resultType="pd">
+        select * from t_reimaudit where id=#{id}
+    </select>
+
+    <select id="findreimlog" parameterType="pd" resultType="pd">
+        select * from t_reimlog where uid=#{uid}
+    </select>
+
+    <select id="getreimdetByUid" resultType="pd" parameterType="pd">
+        select * from t_reimdet where uid=#{uid}
+    </select>
+
+    <select id="findAdminReimAudit" parameterType="pd" resultType="pd">
+        select * from t_adminreimaudit where 1=1
+    </select>
+    <select id="findAdminReimAuditById" parameterType="pd" resultType="pd">
+        select * from t_adminreimaudit where 1=1 and id=#{id}
+    </select>
+    <insert id="insertAdminReimAudit" parameterType="pd">
+        INSERT INTO t_adminreimaudit(
+             uid,
+            subuserid,
+            company,
+            reim_code,
+            submitter,
+            submittime,
+            supauditor,
+            supauditime,
+            supsche,
+            deptauditor,
+            depttime,
+            deptsche,
+            managerauditor,
+            managertime,
+            managersche,
+            busi_code
+        )VALUES (
+            #{uid},
+            #{subuserid},
+            #{company},
+            #{reim_code},
+            #{submitter},
+            #{submittime},
+            #{supauditor},
+            #{supauditime},
+            #{supsche},
+            #{deptauditor},
+            #{depttime},
+            #{deptsche},
+            #{managerauditor},
+            #{managertime},
+            #{managersche},
+            #{busi_code}
+        )
+    </insert>
+    <update id="updateAdminReimAudit" parameterType="pd" >
+        update t_adminreimaudit
+        SET
+        uid=#{uid},
+        subuserid=#{subuserid},
+        company=#{company},
+        reim_code=#{reim_code},
+        submitter=#{submitter},
+        supauditor=#{supauditor},
+        supauditime=#{supauditime},
+        supsche=#{supsche},
+        deptauditor=#{deptauditor},
+        depttime=#{depttime},
+        deptsche=#{deptsche},
+        managerauditor=#{managerauditor},
+        managertime=#{managertime},
+        managersche=#{managersche},
+        busi_code=#{busi_code}
+        WHERE
+        id=#{id}
+    </update>
+    <delete id="deleteAdminReimAudit" parameterType="pd">
+        delete from t_adminreimaudit where id=#{id}
+    </delete>
+    <select id="findAdminReimLog" parameterType="pd" resultType="pd">
+        select * from t_adminreimlog where 1=1
+        <if test="uid!=null and uid!=''">
+            and uid=#{uid}
+        </if>
+    </select>
+    <select id="findAdminReimLogById" parameterType="pd" resultType="pd">
+        select * from t_adminreimlog where 1=1 and id=#{id}
+    </select>
+    <insert id="insertAdminReimLog" parameterType="pd">
+        INSERT INTO t_adminreimlog(
+              busi_project,
+            reason,
+            trip_mode,
+            busi_startcity,
+            busi_endcity,
+            busi_starttime,
+            busi_endtime,
+            busi_time,
+            billnum,
+            tripmon,
+            hostelmon,
+            mission,
+            realmon,
+            uid
+        )VALUES (
+           #{busi_project},
+            #{reason},
+            #{trip_mode},
+            #{busi_startcity},
+            #{busi_endcity},
+            #{busi_starttime},
+            #{busi_endtime},
+            #{busi_time},
+            #{billnum},
+            #{tripmon},
+            #{hostelmon},
+            #{mission},
+            #{realmon},
+            #{uid}
+        )
+    </insert>
+    <update id="updateAdminReimLog" parameterType="pd" >
+        update t_adminreimlog
+        SET
+        busi_project=#{busi_project},
+        reason=#{reason},
+        trip_mode=#{trip_mode},
+        busi_startcity=#{busi_startcity},
+        busi_endcity=#{busi_endcity},
+        busi_starttime=#{busi_starttime},
+        busi_endtime=#{busi_endtime},
+        busi_time=#{busi_time},
+        billnum=#{billnum},
+        tripmon=#{tripmon},
+        hostelmon=#{hostelmon},
+        mission=#{mission},
+        realmon=#{realmon},
+        uid=#{uid}
+        WHERE
+        id=#{id}
+    </update>
+    <delete id="deleteAdminReimLog" parameterType="pd">
+        delete from t_adminreimlog where id=#{id}
+    </delete>
+</mapper>

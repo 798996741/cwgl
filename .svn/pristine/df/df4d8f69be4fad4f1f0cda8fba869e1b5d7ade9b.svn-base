@@ -1,0 +1,180 @@
+package com.fh.service.appstaff.user.impl;
+
+import com.fh.dao.DaoSupport;
+import com.fh.entity.Page;
+import com.fh.entity.system.User;
+import com.fh.service.appstaff.user.AppUserManager;
+import com.fh.util.PageData;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+
+/** 系统用户
+ * @author fh351412933qq()
+ * 修改时间：2015.11.2
+ */
+@Service("appuserService")
+public class AppUserService implements AppUserManager {
+
+	@Resource(name = "daoSupport")
+	private DaoSupport dao;
+	
+	/**登录判断
+	 * @param pd
+	 * @return
+	 * @throws Exception
+	 */
+	public PageData getUserByNameAndPwd(PageData pd)throws Exception{
+		return (PageData)dao.findForObject("AppUserMapper.getUserInfo", pd);
+	}
+	
+	/**更新登录时间
+	 * @param pd
+	 * @throws Exception
+	 */
+	public void updateLastLogin(PageData pd)throws Exception{
+		dao.update("AppUserMapper.updateLastLogin", pd);
+	}
+	
+	/**通过用户ID获取用户信息和角色信息
+	 * @param USER_ID
+	 * @return
+	 * @throws Exception
+	 */
+	public User getUserAndRoleById(String USER_ID) throws Exception {
+		return (User) dao.findForObject("AppUserMapper.getUserAndRoleById", USER_ID);
+	}
+	
+	/**通过USERNAEME获取数据
+	 * @param pd
+	 * @return
+	 * @throws Exception
+	 */
+	public PageData findByUsername(PageData pd)throws Exception{
+		return (PageData)dao.findForObject("AppUserMapper.findByUsername", pd);
+	}
+	
+	/**列出某角色下的所有用户
+	 * @param pd
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<PageData> listAllUserByRoldId(PageData pd) throws Exception {
+		return (List<PageData>) dao.findForList("AppUserMapper.listAllUserByRoldId", pd);
+		
+	}
+	
+	/**保存用户IP
+	 * @param pd
+	 * @throws Exception
+	 */
+	public void saveIP(PageData pd)throws Exception{
+		//dao.update("UserMapper.saveIP", pd);
+	}
+	
+	/**用户列表
+	 * @param page
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<PageData> listUsers(Page page)throws Exception{
+		return (List<PageData>) dao.findForList("AppUserMapper.userlist", page);
+	}
+	
+	/**用户列表(弹窗选择用)
+	 * @param page
+	 * @return
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<PageData> listUsersBystaff(Page page)throws Exception{
+		return (List<PageData>) dao.findForList("AppUserMapper.userBystafflistPage", page);
+	}
+	
+	/**通过邮箱获取数据
+	 * @param pd
+	 * @return
+	 * @throws Exception
+	 */
+	public PageData findByUE(PageData pd)throws Exception{
+		return (PageData)dao.findForObject("AppUserMapper.findByUE", pd);
+	}
+	
+	/**通过编号获取数据
+	 * @param pd
+	 * @return
+	 * @throws Exception
+	 */
+	public PageData findByUN(PageData pd)throws Exception{
+		return (PageData)dao.findForObject("AppUserMapper.findByUN", pd);
+	}
+	
+	/**通过id获取数据
+	 * @param pd
+	 * @return
+	 * @throws Exception
+	 */
+	public PageData findById(PageData pd)throws Exception{
+		return (PageData)dao.findForObject("AppUserMapper.findById", pd);
+	}
+	
+	/**保存用户
+	 * @param pd
+	 * @throws Exception
+	 */
+	public void saveU(PageData pd)throws Exception{
+		dao.save("AppUserMapper.saveU", pd);
+	}
+	 
+	/**修改用户
+	 * @param pd
+	 * @throws Exception
+	 */
+	public void editU(PageData pd)throws Exception{
+		dao.update("AppUserMapper.editU", pd);
+	}
+	
+	/**删除用户
+	 * @param pd
+	 * @throws Exception
+	 */
+	public void deleteU(PageData pd)throws Exception{
+		dao.delete("AppUserMapper.deleteU", pd);
+	}
+	
+	/**批量删除用户
+	 * @param USER_IDS
+	 * @throws Exception
+	 */
+	public void deleteAllU(String[] USER_IDS)throws Exception{
+		dao.delete("AppUserMapper.deleteAllU", USER_IDS);
+	}
+	
+	/**用户列表(全部)
+	 * @param USER_IDS
+	 * @throws Exception
+	 */
+	@SuppressWarnings("unchecked")
+	public List<PageData> listAllUser(PageData pd)throws Exception{
+		return (List<PageData>) dao.findForList("AppUserMapper.listAllUser", pd);
+	}
+	
+	/**获取总数
+	 * @param pd
+	 * @throws Exception
+	 */
+	public PageData getUserCount(String value)throws Exception{
+		return (PageData)dao.findForObject("AppUserMapper.getUserCount", value);
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	public List<User> listAllUsertoCase(PageData pd) throws Exception {
+		return (List<User>) dao.findForList("AppUserMapper.listAllUsertoCase", pd);
+		
+	}
+}

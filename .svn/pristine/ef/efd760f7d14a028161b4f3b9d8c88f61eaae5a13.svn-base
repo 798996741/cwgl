@@ -1,0 +1,92 @@
+package com.fh.controller.manage.reimfy;
+
+import com.fh.controller.base.BaseController;
+import com.fh.pojo.tbreimfy;
+import com.fh.service.manage.reimfy.ReimfyService;
+import com.fh.util.Jurisdiction;
+import com.fh.util.PageData;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+@Controller
+@RequestMapping(value = "/reimfy")
+public class ReimfyController extends BaseController{
+
+    @Resource
+    private ReimfyService reimfyService;
+
+    @RequestMapping(value = "/findReimfy.do")
+    public ModelAndView findReimfy() throws Exception {
+        ModelAndView mv = this.getModelAndView();
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        List<tbreimfy> rlist = reimfyService.findReimfy(pd);
+        List<tbreimfy> oneClass = reimfyService.findOneClass(pd);
+        List<tbreimfy> twoClass = reimfyService.findTwoClass(pd);
+        mv.addObject("rlist",rlist);
+        mv.addObject("oneClass",oneClass);
+        mv.addObject("twoClass",twoClass);
+        mv.addObject("pd",pd);
+        mv.setViewName("system/reimfy/reimfy_list");
+        return mv;
+    }
+
+    @RequestMapping(value = "/findReimfyById.do")
+    public ModelAndView findReimfyById() throws Exception {
+        ModelAndView mv = this.getModelAndView();
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        tbreimfy reimfy = reimfyService.findReimfyById(pd);
+
+        mv.setViewName("system/reimfy/reimfy_edit");
+        mv.addObject("reimfy",reimfy);
+        mv.addObject("msg","updateReimfy");
+        return mv;
+    }
+    @RequestMapping(value = "/goAddC.do")
+    public ModelAndView goAddC() throws Exception {
+
+        ModelAndView mv = this.getModelAndView();
+        mv.setViewName("system/reimfy/reimfy_edit");
+        mv.addObject("msg", "insertReimfy");
+        return mv;
+    }
+    @RequestMapping(value = "/updateReimfy.do")
+    public String updateReimfy() throws Exception {
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        pd.put("username",Jurisdiction.getUsername());
+        Date date = new Date();
+        SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        pd.put("cztime",dateFormat.format(date));
+        reimfyService.updateReimfy(pd);
+        return "redirect:/reimfy/findReimfy.do";
+    }
+
+    @RequestMapping(value = "/insertReimfy.do")
+    public String insertReimfy() throws Exception {
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        pd.put("username", Jurisdiction.getUsername());
+        Date date = new Date();
+        SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        pd.put("cztime",dateFormat.format(date));
+        reimfyService.insertReimfy(pd);
+        return "redirect:/reimfy/findReimfy.do";
+    }
+
+    @RequestMapping(value = "/deleteReimfy.do")
+    public String deleteReimfy() throws Exception {
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        reimfyService.deleteReimfy(pd);
+        return "redirect:/reimfy/findReimfy.do";
+    }
+
+}

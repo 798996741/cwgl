@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ReimdetMapper">
+
+    <select id="FindAllList" parameterType="pd" resultType="pd">
+        SELECT * FROM t_reimdet WHERE 1=1
+        <if test="csname != null and csname != ''">
+            and csname=#{csname}
+        </if>
+        <if test="reimtime != null and reimtime != ''">
+            and time = DATE_FORMAT(#{reimtime},'%Y-%m-%d')
+        </if>
+        <if test="time1 != null and time1 != '' and time2 != null and time2 != ''">
+            and (time BETWEEN #{time1} AND #{time2})
+        </if>
+        <if test="oneclass != null and oneclass != ''">
+            and oneclass=#{oneclass}
+        </if>
+        <if test="twoclass != null and twoclass != ''">
+            and twoclass=#{twoclass}
+        </if>
+        <if test="isapply != null and isapply != ''">
+            or isapply=#{isapply}
+        </if>
+        <if test="isreim != null and isreim != ''">
+            or isreim=#{isreim}
+        </if>
+        <if test="proclass != null and proclass != ''">
+            and proclass=#{proclass}
+        </if>
+        <if test="ispur != null and ispur != ''">
+            and ispur=#{ispur}
+        </if>
+        <if test="billtype != null and billtype != ''">
+            and billtype=#{billtype}
+        </if>
+        <if test="name != null and name != ''">
+            and name=#{name}
+        </if>
+        <if test="isaudit != null and isaudit != ''">
+            and isaudit=#{isaudit}
+        </if>
+    </select>
+    <select id="getOneClass" parameterType="pd" resultType="pd">
+        SELECT DISTINCT oneclass from t_reimfy
+    </select>
+
+    <select id="getTwoClass" parameterType="pd" resultType="pd">
+        SELECT DISTINCT twoclass from t_reimfy
+    </select>
+
+    <select id="getPdec" parameterType="pd" resultType="pd">
+        SELECT DISTINCT pdesc from t_pm
+    </select>
+
+    <select id="getcsname" parameterType="pd" resultType="pd">
+        SELECT DISTINCT csname FROM t_subcom
+    </select>
+
+    <select id="getname" parameterType="pd" resultType="pd">
+        SELECT DISTINCT name FROM SYS_USER
+    </select>
+
+    <select id="getUser" parameterType="pd" resultType="pd">
+        SELECT * FROM SYS_USER WHERE username=#{username}
+    </select>
+
+    <select id="findReimdetById" parameterType="pd" resultType="pd">
+        SELECT * FROM t_reimdet WHERE reimdetid=#{reimdetid}
+    </select>
+
+    <select id="updateReimdet" parameterType="pd">
+        UPDATE
+          t_reimdet
+        SET
+            csname=#{csname},
+            time=DATE_FORMAT(#{time},'%Y-%m-%d'),
+            name=#{name},
+            reason=#{reason},
+            oneclass=#{oneclass},
+            twoclass=#{twoclass},
+            reimmon=#{reimmon},
+            tripmon=#{tripmon},
+            realmon=#{realmon},
+            proclass=#{proclass},
+            billtype=#{billtype},
+            isapply=#{isapply},
+            ispur=#{ispur},
+            isreim=#{isreim},
+            remark=#{remark},
+            isaudit=#{isaudit},
+            filname=#{filname},
+            date=#{date}
+          WHERE
+            reimdetid=#{reimdetid}
+    </select>
+
+    <delete id="deleteReimdetbyid" parameterType="pd">
+        DELETE FROM t_reimdet WHERE reimdetid=#{reimdetid}
+    </delete>
+
+    <insert id="insertReimdet" parameterType="pd">
+        INSERT INTO
+          t_reimdet(
+            csname,
+            time,
+            name,
+            reason,
+            oneclass,
+            twoclass,
+            reimmon,
+            tripmon,
+            realmon,
+            proclass,
+            billtype,
+            isapply,
+            ispur,
+            isreim,
+            remark,
+            isaudit,
+            auditor,
+            filname,
+            date
+          )VALUES (
+            #{csname},
+            DATE_FORMAT(#{time},'%Y-%m-%d'),
+            #{name},
+            #{reason},
+            #{oneclass},
+            #{twoclass},
+            #{reimmon},
+            #{tripmon},
+            #{realmon},
+            #{proclass},
+            #{billtype},
+            #{isapply},
+            #{ispur},
+            #{isreim},
+            #{remark},
+            #{isaudit},
+            #{auditor},
+            #{filname},
+            #{date}
+          )
+    </insert>
+    <!--<select id="getProce_reim" resultType="pm1" parameterType="pd" statementType="CALLABLE">-->
+    <!--{call proce_reim(#{csname,mode=IN},#{time1,mode=IN},#{time2,mode=IN})}-->
+    <!--</select>-->
+    <select id="getReimname" parameterType="pd" resultType="pd">
+        select DISTINCT name
+        FROM t_reimdet
+        WHERE 1=1
+        <if test="csname != null and csname != ''">
+            AND csname=#{csname}
+        </if>
+        <if test="time1 != null and time2 != null">
+            AND (time BETWEEN #{time1} AND #{time2})
+        </if>
+        <if test="isaudit != null and isaudit != ''">
+            and isaudit=#{isaudit}
+        </if>
+    </select>
+    <select id="getReimstat" parameterType="pd" resultType="pd">
+        select oneclass,name,realmon,csname,time
+        FROM t_reimdet
+        WHERE 1=1
+        <if test="csname != null and csname != ''">
+            AND csname=#{csname}
+        </if>
+        <if test="time1 != null and time1 != '' and time2 != null and time2 != ''">
+            AND (time BETWEEN #{time1} AND #{time2})
+        </if>
+        <if test="isaudit != null and isaudit != ''">
+            and isaudit=#{isaudit}
+        </if>
+    </select>
+</mapper>

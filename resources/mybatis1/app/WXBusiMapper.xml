@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="WXBusiMapper">
+
+    <update id="updatemanagersche" parameterType="pd">
+        UPDATE t_busiaudit
+        SET
+        busi_managersche=#{busi_managersche},
+        manageraudit=#{manageraudit},
+        manageraudittime=#{manageraudittime},
+        cztime=#{cztime}
+        WHERE id=#{id}
+    </update>
+
+    <update id="updatesche" parameterType="pd">
+        UPDATE t_busiaudit
+        SET
+        busi_sche=#{busi_sche},
+        auditor=#{auditor},
+        audittime=#{audittime},
+        cztime=#{cztime}
+        WHERE id=#{id}
+    </update>
+
+    <select id="findByauditor" parameterType="pd" resultType="pd">
+        SELECT * FROM t_busiaudit WHERE 1=1
+        <if test="auditor!=null and auditor!=''">
+         and  FIND_IN_SET(#{auditor},auditor)
+        </if>
+        <if test="manageraudit!=null and manageraudit!=''">
+            and  FIND_IN_SET(#{manageraudit},manageraudit)
+        </if>
+         order by subtime desc
+    </select>
+
+    <select id="findbusiauditById" resultType="pd" parameterType="pd">
+        select * from t_busiaudit where id=#{id}
+    </select>
+
+    <select id="findbusilogById" resultType="pd" parameterType="pd">
+        select * from t_busilog where busiauditid=#{id}
+    </select>
+
+    <select id="getbusilogmanageraudity" parameterType="pd" resultType="pd">
+         SELECT * FROM t_busiaudit WHERE FIND_IN_SET(#{manageraudit},manageraudit) and busi_sche!='0' and busi_managersche!='0' order by subtime desc
+    </select>
+
+    <select id="getbusilogmanagerauditn" parameterType="pd" resultType="pd">
+         SELECT * FROM t_busiaudit WHERE FIND_IN_SET(#{manageraudit},manageraudit) and busi_sche = '1' and busi_managersche='0' order by subtime desc
+    </select>
+
+    <select id="getbusilogauditory" parameterType="pd" resultType="pd">
+         SELECT * FROM t_busiaudit WHERE FIND_IN_SET(#{auditor},auditor) and busi_sche!='0' order by subtime desc
+    </select>
+
+    <select id="getbusilogauditorn" parameterType="pd" resultType="pd">
+         SELECT * FROM t_busiaudit WHERE FIND_IN_SET(#{auditor},auditor) and busi_sche = '0' order by subtime desc
+    </select>
+
+    <select id="getbusilogy" parameterType="pd" resultType="pd">
+         SELECT * FROM t_busiaudit WHERE submitter=#{submitter} and busi_sche!='0' and busi_managersche!='0' order by subtime desc
+    </select>
+
+    <select id="getbusilogn" parameterType="pd" resultType="pd">
+         SELECT * FROM t_busiaudit WHERE submitter=#{submitter} and (busi_sche = '0' or busi_managersche ='0') order by subtime desc
+    </select>
+
+    <select id="getMaxAuditno" parameterType="pd" resultType="pd">
+		select max(busi_code) as maxauditno from t_busiaudit WHERE busi_code LIKE CONCAT('%',CONCAT(#{keywords}),'%')
+	</select>
+
+    <insert id="insertbusiaudit" parameterType="pd">
+        INSERT INTO t_busiaudit(
+        id,
+        dept,
+        subuserid,
+        busi_code,
+        busi_day,
+        busi_sche,
+        submitter,
+        auditor,
+        cztime,
+        subtime,
+        audittime,
+        premoney,
+        credit,
+        remark,
+        backtime,
+        manageraudit,
+        manageraudittime,
+        busi_managersche
+        )VALUES (
+        #{id},
+        #{dept},
+        #{subuserid},
+        #{busi_code},
+        #{busi_day},
+        #{busi_sche},
+        #{submitter},
+        #{auditor},
+        #{cztime},
+        #{subtime},
+        #{audittime},
+        #{premoney},
+        #{credit},
+        #{remark},
+        #{backtime},
+        #{manageraudit},
+        #{manageraudittime},
+        #{busi_managersche}
+        )
+    </insert>
+
+    <insert id="insertbusilog" parameterType="pd">
+        INSERT INTO t_busilog(
+        reason,
+        busi_project,
+        busi_startcity,
+        busi_endcity,
+        busi_starttime,
+        busi_endtime,
+        busi_time,
+        trip_mode,
+        busiauditid
+        )VALUES (
+        #{reason},
+        #{busi_project},
+        #{busi_startcity},
+        #{busi_endcity},
+        #{busi_starttime},
+        #{busi_endtime},
+        #{busi_time},
+        #{trip_mode},
+        #{busiauditid}
+        )
+    </insert>
+
+    <insert id="insertwxuser" parameterType="pd">
+        INSERT INTO t_wxuser(
+            userid,
+            name,
+            department,
+            position,
+            mobile,
+            gender,
+            email,
+            avatar,
+            status,
+            enable,
+            isleader,
+            hide_mobile,
+            english_name,
+            telephone,
+            qr_code,
+            alias,
+            is_leader_in_dept,
+            thumb_avatar
+        )VALUES (
+            #{userid},
+            #{name},
+            #{department},
+            #{position},
+            #{mobile},
+            #{gender},
+            #{email},
+            #{avatar},
+            #{status},
+            #{enable},
+            #{isleader},
+            #{hide_mobile},
+            #{english_name},
+            #{telephone},
+            #{qr_code},
+            #{alias},
+            #{is_leader_in_dept},
+            #{thumb_avatar}
+        )
+    </insert>
+
+    <select id="getisleader" parameterType="pd" resultType="pd">
+        SELECT * FROM t_wxuser WHERE isleader=1
+    </select>
+
+    <select id="findByUserid" parameterType="pd" resultType="pd">
+        SELECT * FROM t_wxuser WHERE isleader=1
+    </select>
+
+    <select id="findwxuserbyid" resultType="pd" parameterType="pd">
+        select * from t_wxuser where userid=#{userid}
+    </select>
+
+
+</mapper>

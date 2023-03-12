@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="PMMapper">
+
+	
+	<!--表名 -->
+	<sql id="tableName">
+		t_pm
+	</sql>
+
+
+	<!-- 字段 -->
+	<sql id="Field">
+		pmid,
+		pcate,
+		pdesc,
+		pno,
+		username,
+		cztime,
+		remark
+	</sql>
+
+	<select id="findAllList" resultType="com.fh.pojo.tbpm">
+		SELECT
+			<include refid="Field" />
+		FROM
+			<include refid="tableName"/>
+		order BY pmid
+	</select>
+
+	<select id="findPM" parameterType="java.lang.Long" resultType="com.fh.pojo.tbpm">
+		SELECT
+			<include refid="Field" />
+		FROM
+			<include refid="tableName"/>
+		WHERE pmid=#{pmid}
+	</select>
+
+	<delete id="deletePMById" parameterType="java.lang.Long" >
+		DELETE FROM <include refid="tableName" /> WHERE pmid=#{pmid}
+	</delete>
+
+	<update id="updatePM" parameterType="com.fh.pojo.tbpm" >
+		UPDATE <include refid="tableName"/>
+			set
+				pcate=#{pcate},
+				pdesc=#{pdesc},
+				pno=#{pno},
+				username=#{username},
+				cztime=#{cztime},
+				remark=#{remark}
+			WHERE
+				pmid=#{pmid}
+	</update>
+
+	<insert id="insertPM" parameterType="com.fh.pojo.tbpm">
+		insert into
+		<include refid="tableName"/>
+		(
+		pcate,
+		pdesc,
+		pno,
+		username,
+		cztime,
+		remark
+		)VALUES (
+		#{pcate},
+		#{pdesc},
+		#{pno},
+		#{username},
+		#{cztime},
+		#{remark}
+		)
+	</insert>
+	
+	<select id="findPno" parameterType="pd" resultType="pd">
+		SELECT pno from <include refid="tableName"/> WHERE pno=#{pno}
+	</select>
+</mapper>

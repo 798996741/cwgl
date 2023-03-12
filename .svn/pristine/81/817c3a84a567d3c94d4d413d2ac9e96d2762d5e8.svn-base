@@ -1,0 +1,10 @@
+package com.fh.service.app;
+
+import com.fh.util.PageData;
+
+public interface LeaveService {
+    public PageData findLeaveById(PageData pd) throws Exception;
+    public PageData findUserByUserid(PageData pd) throws Exception;
+    public void insertLeave(PageData pd) throws Exception;
+    public void updateLeave(PageData pd) throws Exception;
+}

@@ -1,0 +1,770 @@
+package com.fh.controller.finance.reim;
+
+import com.fh.controller.base.BaseController;
+import com.fh.service.finance.reim.ReimdetService;
+import com.fh.service.system.fhlog.FHlogManager;
+import com.fh.util.*;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.net.URLDecoder;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+@Controller
+@RequestMapping(value = "/reimdet")
+public class ReimdetController extends BaseController {
+    String menuUrl = "reimdet/findReimdet.do";
+    String redirect = "redirect:/reimdet/findReimdet.do";
+    @Resource(name = "reimdetServiceImpl")
+    private ReimdetService reimdetService;
+    @Resource(name = "fhlogService")
+    private FHlogManager FHLOG;
+
+    @RequestMapping(value = "/findReimdet.do", method = RequestMethod.GET)
+    public ModelAndView FindAllList() throws Exception {
+        ModelAndView mv = this.getModelAndView();
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        URLDecoder urlDecoder = new URLDecoder();
+        String keywords = pd.getString("keywords");				//关键词检索条件
+        String keywords1 = keywords == null ? "" : urlDecoder.decode(keywords, "utf-8");
+        if(null != keywords && !"".equals(keywords)){
+            pd.put("keywords", keywords1.trim());
+        }
+
+        String csname = pd.getString("csname");
+        String csname1 = csname == null ? "" : urlDecoder.decode(csname, "utf-8");
+        if (null != csname && !"".equals(csname)) {
+            pd.put("csname", csname1);
+        }else if (null == csname || "".equals(csname)){
+            pd.put("csname", "宇伦");
+        }
+        String time = pd.getString("time");
+        if (null != time && !"".equals(time)) {
+            pd.put("time1", time + "-01");
+            pd.put("time2", time + "-31");
+        }else if (null == time || "".equals(time)){
+            Date date = new Date();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
+            pd.put("time1", dateFormat.format(date) + "-01");
+            pd.put("time2", dateFormat.format(date) + "-31");
+        }
+
+        String reimtime = pd.getString("reimtime");
+        if (null != reimtime && !"".equals(reimtime)) {
+            pd.put("reimtime", reimtime);
+        }
+        String oneclass = pd.getString("oneclass");
+        String oneclass1 = oneclass == null ? "" : urlDecoder.decode(oneclass, "utf-8");
+        if (null != oneclass && !"".equals(oneclass)) {
+            pd.put("oneclass", oneclass1);
+        }
+        String twoclass = pd.getString("twoclass");
+        String twoclass1 = twoclass == null ? "" : urlDecoder.decode(twoclass, "utf-8");
+        if (null != twoclass && !"".equals(twoclass)) {
+            pd.put("twoclass", twoclass1);
+        }
+        String isapply = pd.getString("isapply");
+        if (null != isapply && !"".equals(isapply)) {
+            pd.put("isapply", isapply);
+        }
+        String isreim = pd.getString("isreim");
+        if (null != isreim && !"".equals(isreim)) {
+            pd.put("isreim", isreim);
+        }
+        String proclass = pd.getString("proclass");
+        String proclass1 = proclass == null ? "" : urlDecoder.decode(proclass, "utf-8");
+        if (null != proclass && !"".equals(proclass)) {
+            pd.put("proclass", proclass1);
+        }
+        String ispur = pd.getString("ispur");
+        if (null != ispur && !"".equals(ispur)) {
+            pd.put("ispur", ispur);
+        }
+        String billtype = pd.getString("billtype");
+        String billtype1 = billtype == null ? "" : urlDecoder.decode(billtype, "utf-8");
+        if (null != billtype && !"".equals(billtype)) {
+            pd.put("billtype", billtype1);
+        }
+        String name = pd.getString("name");
+        if (null != name && !"".equals(name)) {
+            pd.put("name", name);
+        }
+        String isaudit = pd.getString("isaudit");
+        if (null != isaudit && !"".equals(isaudit)) {
+            pd.put("isaudit", isaudit);
+        }
+
+        List<PageData> getcsname = reimdetService.getcsname(pd);
+        List<PageData> getname = reimdetService.getname(pd);
+        List<PageData> oneClass = reimdetService.getOneClass(pd);
+        List<PageData> pdec = reimdetService.getPdec(pd);
+        List<PageData> relist = reimdetService.FindAllList(pd);
+        pd.put("username",Jurisdiction.getUsername());
+        PageData user = reimdetService.getUser(pd);
+        mv.addObject("user", user);
+        System.out.println(pd);
+        mv.addObject("pd", pd);
+        mv.addObject("relist", relist);
+        mv.addObject("getcsname", getcsname);
+        mv.addObject("getname", getname);
+        mv.addObject("oneClass", oneClass);
+        mv.addObject("pdec", pdec);
+        mv.addObject("QX", Jurisdiction.getHC());
+        mv.setViewName("reim/reimdet/reimdet_list");
+        return mv;
+    }
+
+    @RequestMapping(value = "/goAddC.do")
+    public ModelAndView goAddC() throws Exception {
+        ModelAndView mv = this.getModelAndView();
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        URLDecoder urlDecoder = new URLDecoder();
+        String csname = pd.getString("csname");
+        String csname1 = csname == null ? "" : urlDecoder.decode(csname, "utf-8");
+        pd.put("csname", csname1);
+        String time = pd.getString("time");
+        pd.put("username", Jurisdiction.getUsername());
+        List<PageData> getname = reimdetService.getname(pd);
+        List<PageData> oneClass = reimdetService.getOneClass(pd);
+        List<PageData> twoClass = reimdetService.getTwoClass(pd);
+        List<PageData> pdec = reimdetService.getPdec(pd);
+
+        PageData user = reimdetService.getUser(pd);
+        mv.addObject("user", user);
+        mv.addObject("getname", getname);
+        mv.addObject("oneClass", oneClass);
+        mv.addObject("twoClass", twoClass);
+        mv.addObject("pdec", pdec);
+        mv.addObject("pd", pd);
+        mv.addObject("msg", "insertReimdet");
+
+        mv.setViewName("reim/reimdet/reimdet_add");
+        return mv;
+    }
+
+    @RequestMapping(value = "/findReimdetById.do")
+    public ModelAndView findReimdetById() throws Exception {
+//        if (!Jurisdiction.buttonJurisdiction(menuUrl, "edit")) {
+//            return null;
+//        } //校验权限
+        ModelAndView mv = this.getModelAndView();
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        URLDecoder urlDecoder = new URLDecoder();
+        String csname = pd.getString("csname");
+        String csname1 = csname == null ? "" : urlDecoder.decode(csname, "utf-8");
+        if (null != csname && !"".equals(csname)) {
+            pd.put("csname", csname1);
+        }else if (null == csname || "".equals(csname)){
+            pd.put("csname", "宇伦");
+        }
+        String time = pd.getString("time");
+        pd.put("username", Jurisdiction.getUsername());
+        PageData reimdet = reimdetService.findReimdetById(pd);
+        List<PageData> getname = reimdetService.getname(pd);
+        List<PageData> oneClass = reimdetService.getOneClass(pd);
+        List<PageData> twoClass = reimdetService.getTwoClass(pd);
+        List<PageData> pdec = reimdetService.getPdec(pd);
+        PageData user = reimdetService.getUser(pd);
+        mv.addObject("user", user);
+        mv.addObject("pd", pd);
+        mv.addObject("getname", getname);
+        mv.addObject("oneClass", oneClass);
+        mv.addObject("twoClass", twoClass);
+        mv.addObject("pdec", pdec);
+        mv.addObject("reimdet", reimdet);
+        mv.addObject("QX", Jurisdiction.getHC());
+        mv.addObject("msg", "updateReimdet");
+        mv.setViewName("reim/reimdet/reimdet_add");
+        return mv;
+    }
+
+    @RequestMapping(value = "/insertReimdet.do", method = RequestMethod.POST)
+    public String insertReimdet() throws Exception {
+//        if (!Jurisdiction.buttonJurisdiction(menuUrl, "add")) {
+//            return null;
+//        } //校验权限
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        String csname = pd.getString("csname").trim();
+        pd.put("csname", csname);
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        pd.put("date", dateFormat.format(date));
+        String username = Jurisdiction.getUsername();
+        pd.put("filname", username);
+        pd.put("auditor", "admin");
+        System.out.println(pd + "pd");
+        reimdetService.insertReimdet(pd);
+        return redirect;
+    }
+
+    @RequestMapping(value = "/updateReimdet.do", method = RequestMethod.POST)
+    public String updateReimdet() throws Exception {
+//        if (!Jurisdiction.buttonJurisdiction(menuUrl, "edit")) {
+//            return null;
+//        } //校验权限
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        String csname = pd.getString("csname").trim();
+        pd.put("csname", csname);
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        pd.put("date", dateFormat.format(date));
+        reimdetService.updateReimdet(pd);
+        return redirect;
+    }
+
+    @RequestMapping(value = "/deleteReimdetbyid.do")
+    public String deleteReimdetbyid() throws Exception {
+//        if (!Jurisdiction.buttonJurisdiction(menuUrl, "del")) {
+//            return null;
+//        } //校验权限
+        ModelAndView mv = this.getModelAndView();
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        reimdetService.deleteReimdetbyid(pd);
+        URLDecoder urlDecoder = new URLDecoder();
+//        String csname = pd.getString("csname");
+//        String csname1 = csname == null ? "" : urlDecoder.decode(csname, "utf-8");
+        String s="redirect:/reimdet/findReimdet.do?csname="+pd.getString("csname")+"&time="+pd.getString("time");
+        return s;
+    }
+
+    /**
+     * 导出用户信息到EXCEL
+     *
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/excel")
+    public ModelAndView exportExcel() throws Exception {
+        FHLOG.save(Jurisdiction.getUsername(), "导出合同信息到EXCEL");
+        ModelAndView mv = this.getModelAndView();
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        try {
+//            if (Jurisdiction.buttonJurisdiction(menuUrl, "cha")) {
+            //关键词检索条件
+            URLDecoder urlDecoder = new URLDecoder();
+            String csname = pd.getString("csname");
+            String csname1 = csname == null ? "" : urlDecoder.decode(csname, "utf-8");
+            if (null != csname && !"".equals(csname)) {
+                pd.put("csname", csname1);
+            }else if (null == csname || "".equals(csname)){
+                pd.put("csname", "宇伦");
+            }
+            String time = pd.getString("time");
+            if (null != time && !"".equals(time)) {
+                pd.put("time1", time + "-01");
+                pd.put("time2", time + "-31");
+            }else if (null == time || "".equals(time)){
+                Date date = new Date();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
+                pd.put("time1", dateFormat.format(date) + "-01");
+                pd.put("time2", dateFormat.format(date) + "-31");
+            }
+
+            String reimtime = pd.getString("reimtime");
+            if (null != reimtime && !"".equals(reimtime)) {
+                pd.put("reimtime", reimtime);
+            }
+            String oneclass = pd.getString("oneclass");
+            String oneclass1 = oneclass == null ? "" : urlDecoder.decode(oneclass, "utf-8");
+            if (null != oneclass && !"".equals(oneclass)) {
+                pd.put("oneclass", oneclass1);
+            }
+            String twoclass = pd.getString("twoclass");
+            String towclass1 = twoclass == null ? "" : urlDecoder.decode(oneclass, "utf-8");
+            if (null != twoclass && !"".equals(twoclass)) {
+                pd.put("twoclass", towclass1);
+            }
+            String isapply = pd.getString("isapply");
+            if (null != isapply && !"".equals(isapply)) {
+                pd.put("isapply", isapply);
+            }
+            String isreim = pd.getString("isreim");
+            if (null != isreim && !"".equals(isreim)) {
+                pd.put("isreim", isreim);
+            }
+            String proclass = pd.getString("proclass");
+            String proclass1 = proclass == null ? "" : urlDecoder.decode(proclass, "utf-8");
+            if (null != proclass && !"".equals(proclass)) {
+                pd.put("proclass", proclass1);
+            }
+            String ispur = pd.getString("ispur");
+            if (null != ispur && !"".equals(ispur)) {
+                pd.put("ispur", ispur);
+            }
+            String billtype = pd.getString("billtype");
+            String billtype1 = billtype == null ? "" : urlDecoder.decode(billtype, "utf-8");
+            if (null != billtype && !"".equals(billtype)) {
+                pd.put("billtype", billtype1);
+            }
+            String name = pd.getString("name");
+            if (null != name && !"".equals(name)) {
+                pd.put("name", name);
+            }
+            String isaudit = pd.getString("isaudit");
+            if (null != isaudit && !"".equals(isaudit)) {
+                pd.put("isaudit", isaudit);
+            }
+            Map<String, Object> dataMap = new HashMap<String, Object>();
+            List<String> titles = new ArrayList<String>();
+            titles.add("报销日期");        //1
+            titles.add("报销人");        //2
+            titles.add("报销事由");            //3
+            titles.add("报销分类");            //4
+            titles.add("二级分类");            //5
+            titles.add("报销金额");            //6
+            titles.add("差旅补贴");        //7
+            titles.add("实报金额");
+
+            titles.add("项目分类");
+            titles.add("票据类型");
+            titles.add("是否有出差申请单");
+            titles.add("是否有采购申请单");
+            titles.add("是否已报销");
+            titles.add("备注");
+            titles.add("审核状态");//15
+            dataMap.put("titles", titles);
+
+
+            List<PageData> reimdet = reimdetService.FindAllList(pd);
+//            System.out.println(sellList);
+
+            List<PageData> varList = new ArrayList<PageData>();
+            for (int i = 0; i < reimdet.size(); i++) {
+                PageData vpd = new PageData();
+                vpd.put("var1", reimdet.get(i).getString("time"));        //1
+                vpd.put("var2", reimdet.get(i).getString("name"));
+                vpd.put("var3", reimdet.get(i).getString("reason"));
+                vpd.put("var4", reimdet.get(i).getString("oneclass"));
+                vpd.put("var5", reimdet.get(i).getString("twoclass"));
+                vpd.put("var6", reimdet.get(i).get("reimmon").toString());
+                vpd.put("var7", reimdet.get(i).get("tripmon").toString());
+                vpd.put("var8", reimdet.get(i).get("realmon").toString());
+                vpd.put("var9", reimdet.get(i).getString("proclass"));
+                vpd.put("var10", reimdet.get(i).getString("billtype"));
+                String isapply1 = reimdet.get(i).getString("isapply");
+                if ("0".equals(isapply1)) {
+                    vpd.put("var11", "是");
+                } else if ("1".equals(isapply1)) {
+                    vpd.put("var11", "否");
+                }
+                String ispur1 = reimdet.get(i).getString("ispur");
+                if ("0".equals(ispur1)) {
+                    vpd.put("var12", "是");
+                } else if ("1".equals(ispur1)) {
+                    vpd.put("var12", "否");
+                }
+                String isreim1 = reimdet.get(i).getString("isreim");
+                if ("0".equals(isreim1)) {
+                    vpd.put("var13", "是");
+                } else if ("1".equals(isreim1)) {
+                    vpd.put("var13", "否");
+                }
+                vpd.put("var14", reimdet.get(i).getString("remark"));
+                String isaudit1 = reimdet.get(i).getString("isaudit");
+                if ("0".equals(isreim1)) {
+                    vpd.put("var15", "审核通过");
+                } else if ("1".equals(isreim1)) {
+                    vpd.put("var15", "审核不通过");
+                } else if ("2".equals(isreim1)) {
+                    vpd.put("var15", "暂未审核");
+                }
+                varList.add(vpd);
+            }
+
+            dataMap.put("varList", varList);
+            ObjectExcelView erv = new ObjectExcelView();                    //执行excel操作
+            mv = new ModelAndView(erv, dataMap);
+
+
+//            }
+        } catch (Exception e) {
+            logger.error(e.toString(), e);
+        }
+//        mv.setViewName("redirect:/reimdet/findReimdet.do");
+        return mv;
+    }
+
+    @RequestMapping(value = "/goload.do")
+    public ModelAndView goload() throws Exception {
+        ModelAndView mv = this.getModelAndView();
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        mv.setViewName("reim/reimdet/reimdet_export");
+        return mv;
+    }
+
+    /**
+     * 从EXCEL导入到数据库
+     *
+     * @param file
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/readExcel")
+    public ModelAndView readExcel(
+            @RequestParam(value = "excel", required = false) MultipartFile file
+    ) throws Exception {
+        FHLOG.save(Jurisdiction.getUsername(), "从EXCEL导入到数据库");
+        ModelAndView mv = this.getModelAndView();
+        PageData pd = new PageData();
+        if (!Jurisdiction.buttonJurisdiction(menuUrl, "add")) {
+            return null;
+        }
+        if (null != file && !file.isEmpty()) {
+            String filePath = PathUtil.getClasspath() + Const.FILEPATHFILE;                                //文件上传路径
+            String fileName = FileUpload.fileUp(file, filePath, "reimdetexcel");                            //执行上传
+            List<PageData> listPd = (List) ObjectExcelRead.readExcel(filePath, fileName, 2, 0, 0);        //执行读EXCEL操作,读出的数据导入List 2:从第3行开始；0:从第A列开始；0:第0个sheet
+            /*存入数据库操作======================================*/
+            for (int i = 0; i < listPd.size(); i++) {
+                System.out.println(i+"i++++++++++++++++++++++");
+                pd.put("time", listPd.get(i).getString("var0"));
+                pd.put("name", listPd.get(i).getString("var1"));
+                pd.put("reason", listPd.get(i).getString("var2"));
+                pd.put("oneclass", listPd.get(i).getString("var3"));
+//                String var3 = listPd.get(i).getString("var3");
+//                List<PageData> oneClass = reimdetService.getOneClass(pd);
+//                for (PageData aClass : oneClass) {
+//                    String oneclass = aClass.getString("oneclass");
+//                    if (var3.equals(oneclass)) {
+//                        pd.put("oneclass", oneclass);
+//                    }
+//                }
+                pd.put("twoclass", listPd.get(i).getString("var4"));
+//                String var4 = listPd.get(i).getString("var4");
+//                List<PageData> twoClass = reimdetService.getTwoClass(pd);
+//                for (PageData aClass : twoClass) {
+//                    String twoclass = aClass.getString("twoclass");
+//                    if (var4.equals(twoclass)) {
+//                        pd.put("twoclass", twoclass);
+//                    }
+//                }
+                String var5 = listPd.get(i).get("var5").toString();
+                if (var5 != "" && var5 != null) {
+                    BigDecimal reimmon = new BigDecimal(var5);
+                    pd.put("reimmon", reimmon);
+                }
+                String var6 = listPd.get(i).get("var6").toString();
+                if (var6 != "" && var6 != null) {
+                    BigDecimal tripmon = new BigDecimal(var6);
+                    pd.put("tripmon", tripmon);
+                }
+                String var7 = listPd.get(i).get("var7").toString();
+                if (var7 != "" && var7 != null) {
+                    BigDecimal realmon = new BigDecimal(var7);
+                    pd.put("realmon", realmon);
+                }
+                pd.put("proclass", listPd.get(i).getString("var8"));
+//                String var8 = listPd.get(i).getString("var8");
+//                List<PageData> pdec = reimdetService.getPdec(pd);
+//                for (PageData pageData : pdec) {
+//                    String pdesc = pageData.getString("pdesc");
+//                    if (var8.equals(pdesc)) {
+//                        pd.put("proclass", pdesc);
+//                    }
+//                }
+                String var9 = listPd.get(i).getString("var9");
+                if ("发票".equals(var9)) {
+                    pd.put("billtype", 0);
+                } else if ("收据".equals(var9)) {
+                    pd.put("billtype", 1);
+                } else if ("付款截图".equals(var9)) {
+                    pd.put("billtype", 2);
+                }
+
+                String var10 = listPd.get(i).getString("var10");
+                if (var10.equals("是")) {
+                    pd.put("isapply", 0);
+                } else if (var10.equals("否")) {
+                    pd.put("isapply", 1);
+                }
+                String var11 = listPd.get(i).getString("var11");
+                if (var11.equals("是")) {
+                    pd.put("ispur", 0);
+                } else if (var11.equals("否")) {
+                    pd.put("ispur", 1);
+                }
+                String var12 = listPd.get(i).getString("var12");
+                if (var12.equals("是")) {
+                    pd.put("isreim", 0);
+                } else if (var12.equals("否")) {
+                    pd.put("isreim", 1);
+                }
+                pd.put("remark", listPd.get(i).getString("var13"));
+                String var14 = listPd.get(i).getString("var14");
+                if (var14.equals("审核通过")) {
+                    pd.put("isaudit", 0);
+                } else if (var14.equals("审核不通过")) {
+                    pd.put("isaudit", 1);
+                } else if (var14.equals("暂未审核")) {
+                    pd.put("isaudit", 2);
+                }
+                pd.put("csname", listPd.get(i).getString("var15"));
+                pd.put("filname","admin");
+                Date date = new Date();
+                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+                pd.put("date", dateFormat.format(date));
+                System.out.println(pd);
+                reimdetService.insertReimdet(pd);
+            }
+        }
+        mv.addObject("msg", "success");
+
+        mv.setViewName("redirect:/reimdet/findReimdet.do");
+        return mv;
+    }
+
+    @RequestMapping(value = "/getProce_reim.do")
+    public ModelAndView getProce_reim() throws Exception {
+        ModelAndView mv = this.getModelAndView();
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
+        URLDecoder urlDecoder = new URLDecoder();
+        String csname = pd.getString("csname");
+        String csname1 = csname == null ? "" : urlDecoder.decode(csname, "utf-8");
+        if (null != csname && !"".equals(csname)) {
+            pd.put("csname", csname1);
+        }else if (null == csname || "".equals(csname)){
+            pd.put("csname", "宇伦");
+        }
+        String time1 = pd.getString("time1");
+        if (null != time1 && !"".equals(time1)) {
+            pd.put("time1", time1);
+        }else if (null == time1 || "".equals(time1)){
+            pd.put("time1", dateFormat.format(date)+"-01");
+        }
+        String time2 = pd.getString("time2");
+        if (null != time2 && !"".equals(time2)) {
+            pd.put("time2", time2);
+        }else if (null == time2 || "".equals(time2)){
+            pd.put("time2", dateFormat.format(date)+"-31");
+        }
+        pd.put("isaudit", '0');
+        System.out.println(dateFormat.format(date));
+        System.out.println(pd);
+        List<PageData> reimstat = reimdetService.getReimstat(pd);
+        List<PageData> oneClass = reimdetService.getOneClass(pd);
+        List<PageData> getcsname = reimdetService.getcsname(pd);
+        HashMap<String, HashMap<String, BigDecimal>> map = new HashMap();
+
+        for (PageData pageData : reimstat) {
+            HashMap<String, BigDecimal> monmap = new HashMap();
+            for (PageData aClass : oneClass) {
+                String oneclass = aClass.getString("oneclass");
+                monmap.put(oneclass, new BigDecimal(0));
+            }
+            map.put(pageData.getString("name"), monmap);
+        }
+
+        for (PageData reimstatpd : reimstat) {
+            String oneclass = reimstatpd.getString("oneclass");
+            BigDecimal realmon = new BigDecimal(reimstatpd.get("realmon").toString());
+            String name = reimstatpd.getString("name");
+
+            for (Map.Entry<String, HashMap<String, BigDecimal>> mapEntry : map.entrySet()) {
+                if (mapEntry.getKey().equals(name)) {
+                    BigDecimal add = map.get(name).get(oneclass).add(realmon);
+                    HashMap<String, BigDecimal> oneclassMap = map.get(name);
+                    oneclassMap.put(oneclass, add);
+                    map.put(name, oneclassMap);
+                }
+            }
+
+        }
+        HashMap<String, BigDecimal> stotal = new HashMap();
+        for (PageData pageData : reimstat) {
+            String name = pageData.getString("name");
+            stotal.put(name, new BigDecimal(0));
+            HashMap<String, BigDecimal> nameMap = map.get(name);
+            for (Map.Entry<String, BigDecimal> Entry : nameMap.entrySet()) {
+                stotal.put(name, Entry.getValue().add(stotal.get(name)));
+            }
+
+        }
+
+        HashMap<String, BigDecimal> btotal = new HashMap();
+        for (PageData aClass : oneClass) {
+            String oneclass = aClass.getString("oneclass");
+            btotal.put(oneclass, new BigDecimal(0));
+            for (Map.Entry<String, HashMap<String, BigDecimal>> classMap : map.entrySet()) {
+                btotal.put(oneclass, classMap.getValue().get(oneclass).add(btotal.get(oneclass)));
+            }
+        }
+        BigDecimal sum = new BigDecimal(0);
+        for (Map.Entry<String, BigDecimal> summap : btotal.entrySet()) {
+
+            sum = sum.add(summap.getValue());
+        }
+
+
+
+        mv.addObject("sum", sum);
+        mv.addObject("stotal", stotal);
+        mv.addObject("btotal", btotal);
+        mv.addObject("map", map);
+        mv.addObject("getcsname", getcsname);
+        mv.addObject("pd", pd);
+        mv.addObject("oneClass", oneClass);
+        mv.setViewName("reim/reimstat/reimstat_list");
+        return mv;
+    }
+
+    /**
+     * 导出用户信息到EXCEL
+     *
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping(value = "/exportReimstat.do")
+    public ModelAndView exportReimstat() throws Exception {
+        FHLOG.save(Jurisdiction.getUsername(), "导出合同信息到EXCEL");
+        ModelAndView mv = this.getModelAndView();
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM");
+        try {
+            if (Jurisdiction.buttonJurisdiction(menuUrl, "cha")) {
+                //关键词检索条件
+                URLDecoder urlDecoder = new URLDecoder();
+                String csname = pd.getString("csname");
+                String csname1 = csname == null ? "" : urlDecoder.decode(csname, "utf-8");
+                if (null != csname && !"".equals(csname)) {
+                    pd.put("csname", csname1);
+                }else if (null == csname || "".equals(csname)){
+                    pd.put("csname", "宇伦");
+                }
+                String time1 = pd.getString("time1");
+                if (null != time1 && !"".equals(time1)) {
+                    pd.put("time1", time1);
+                }else if (null == time1 || "".equals(time1)){
+                    pd.put("time1", dateFormat.format(date)+"-01");
+                }
+                String time2 = pd.getString("time2");
+                if (null != time2 && !"".equals(time2)) {
+                    pd.put("time2", time2);
+                }else if (null != time2 && !"".equals(time2)){
+                    pd.put("time2", dateFormat.format(date)+"-31");
+                }
+                pd.put("isaudit", '0');
+
+                List<PageData> reimstat = reimdetService.getReimstat(pd);
+                List<PageData> oneClass = reimdetService.getOneClass(pd);
+                HashMap<String, HashMap<String, BigDecimal>> map = new HashMap();
+
+                for (PageData pageData : reimstat) {
+                    HashMap<String, BigDecimal> monmap = new HashMap();
+                    for (PageData aClass : oneClass) {
+                        String oneclass = aClass.getString("oneclass");
+                        monmap.put(oneclass, new BigDecimal(0));
+                    }
+                    map.put(pageData.getString("name"), monmap);
+                }
+
+                for (PageData reimstatpd : reimstat) {
+                    String oneclass = reimstatpd.getString("oneclass");
+                    BigDecimal realmon = new BigDecimal(reimstatpd.get("realmon").toString());
+                    String name = reimstatpd.getString("name");
+
+                    for (Map.Entry<String, HashMap<String, BigDecimal>> mapEntry : map.entrySet()) {
+                        if (mapEntry.getKey().equals(name)) {
+                            BigDecimal add = map.get(name).get(oneclass).add(realmon);
+                            HashMap<String, BigDecimal> oneclassMap = map.get(name);
+                            oneclassMap.put(oneclass, add);
+                            map.put(name, oneclassMap);
+                        }
+                    }
+                    System.out.println(map);
+                }
+                HashMap<String, BigDecimal> stotal = new HashMap();
+                for (PageData pageData : reimstat) {
+                    String name = pageData.getString("name");
+                    stotal.put(name, new BigDecimal(0));
+                    HashMap<String, BigDecimal> nameMap = map.get(name);
+                    for (Map.Entry<String, BigDecimal> Entry : nameMap.entrySet()) {
+                        stotal.put(name, Entry.getValue().add(stotal.get(name)));
+                    }
+
+                }
+
+                HashMap<String, BigDecimal> btotal = new HashMap();
+                for (PageData aClass : oneClass) {
+                    String oneclass = aClass.getString("oneclass");
+                    btotal.put(oneclass, new BigDecimal(0));
+                    for (Map.Entry<String, HashMap<String, BigDecimal>> classMap : map.entrySet()) {
+                        btotal.put(oneclass, classMap.getValue().get(oneclass).add(btotal.get(oneclass)));
+                    }
+                }
+                BigDecimal sum = new BigDecimal(0);
+                for (Map.Entry<String, BigDecimal> summap : btotal.entrySet()) {
+
+                    sum = sum.add(summap.getValue());
+                }
+
+
+                Map<String, Object> dataMap = new HashMap<String, Object>();
+                List<String> titles = new ArrayList<String>();
+                titles.add("姓名");        //1
+                for (PageData aClass : oneClass) {
+                    titles.add(aClass.getString("oneclass"));
+                }
+                titles.add("小计");
+                dataMap.put("titles", titles);
+
+
+                List<PageData> varList = new ArrayList<PageData>();
+
+
+                for (Map.Entry<String, HashMap<String, BigDecimal>> mapEntry : map.entrySet()) {
+                    PageData vpd = new PageData();
+                    vpd.put("var1", mapEntry.getKey());
+                    int count = 2;
+                    for (PageData aClass : oneClass) {
+                        String oneclass = aClass.getString("oneclass");
+                        BigDecimal realmon = mapEntry.getValue().get(oneclass);
+                        vpd.put("var" + count++, realmon.toString());
+                    }
+                    vpd.put("var" + count, stotal.get(mapEntry.getKey()).toString());
+                    varList.add(vpd);
+                }
+
+                PageData vpd = new PageData();
+                vpd.put("var1", "合计");
+                int count = 2;
+                for (PageData aClass : oneClass) {
+
+                    String oneclass = aClass.getString("oneclass");
+                    vpd.put("var" + count++, btotal.get(oneclass).toString());
+                }
+                vpd.put("var" + count, sum.toString());
+                varList.add(vpd);
+                System.out.println(varList + "varList");
+                dataMap.put("varList", varList);
+                ObjectExcelView erv = new ObjectExcelView();                    //执行excel操作
+                mv = new ModelAndView(erv, dataMap);
+
+
+            }
+        } catch (Exception e) {
+            logger.error(e.toString(), e);
+        }
+
+        return mv;
+    }
+
+}

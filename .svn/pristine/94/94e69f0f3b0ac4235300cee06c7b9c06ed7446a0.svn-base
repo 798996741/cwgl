@@ -1,0 +1,25 @@
+package com.fh.utils;
+/**
+ * 微信参数
+ * @author
+ *
+ */
+public class WeiXinParamesUtil {
+    //token
+    public final static String token = "nSWt01IFz5exyG6wxMIVe";
+    // encodingAESKey
+    public final static String encodingAESKey = "fZXWJ9MipEDoyFDKdXQjrynyX1gEYviUKGqRWQhNSeN";
+    //企业ID
+    public final static String corpId = "wwe1de579339958660";
+    //应用的凭证密钥
+    public final static String corpsecret = "DN56liP41YlzMLc1qpzQuPTo1Y7s69ulkRWdbkZLrMs";
+
+    //应用的凭证密钥
+    public final static String agentSecret = "I73733veH3uCs6H_ijPvIq0skjTaOePsFF4MyCEi3Ag";
+    //通讯录秘钥
+    public final static String contactsSecret = "1m_9XP62YrXjSiYtL5ThbexiLVWBThukiK5sH7wm1TM";
+
+    //企业应用的id，整型。可在应用的设置页面查看
+    public final static int agentId = 1000002;
+
+}

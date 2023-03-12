@@ -1,0 +1,52 @@
+package com.fh.controller.app.appuser;
+
+import com.fh.qq.weixin.mp.aes.AesException;
+import com.fh.qq.weixin.mp.aes.WXBizMsgCrypt;
+import com.fh.service.app.LeaveService;
+import com.fh.service.app.MessageService;
+import com.fh.utils.WeiXinParamesUtil;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.PrintWriter;
+
+@Controller
+@RequestMapping(value="/leave")
+public class LeaveController extends HttpServlet {
+    @Resource(name = "leaveServiceImpl")
+    private LeaveService leaveService;
+    private MessageService messageService;
+    @RequestMapping(value = "/goleave",method = RequestMethod.POST)
+    public void goleave(HttpServletRequest request, HttpServletResponse response,String url) throws Exception {
+    // 微信加密签名
+        String msg_signature = request.getParameter("msg_signature");
+        // 时间戳
+        String timestamp = request.getParameter("timestamp");
+        // 随机数
+        String nonce = request.getParameter("nonce");
+        // 随机字符串
+        String echostr = request.getParameter("echostr");
+
+        System.out.println("request=" + request.getRequestURL());
+
+        PrintWriter out = response.getWriter();
+        // 通过检验msg_signature对请求进行校验，若校验成功则原样返回echostr，表示接入成功，否则接入失败
+        String result = null;
+        try {
+            WXBizMsgCrypt wxcpt = new WXBizMsgCrypt(WeiXinParamesUtil.token, WeiXinParamesUtil.encodingAESKey, WeiXinParamesUtil.corpId);
+            result = wxcpt.VerifyURL(msg_signature, timestamp, nonce, echostr);
+        } catch (AesException e) {
+            e.printStackTrace();
+        }
+        if (result == null) {
+            result = WeiXinParamesUtil.token;
+        }
+        System.out.println(result);
+    }
+
+}

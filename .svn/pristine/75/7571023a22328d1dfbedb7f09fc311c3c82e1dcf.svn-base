@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ReimfyMapper">
+
+	<select id="findReimfy" parameterType="pd" resultType="pd">
+		SELECT * FROM t_reimfy
+		WHERE 1=1
+			<if test="oneclass != '' and oneclass != null">
+				AND oneclass=#{oneclass}
+			</if>
+			<if test="twoclass != '' and twoclass != null">
+				AND twoclass=#{twoclass}
+			</if>
+	</select>
+
+	<select id="findOneClass" parameterType="pd" resultType="pd">
+		SELECT DISTINCT oneclass from t_reimfy
+	</select>
+
+	<select id="findTwoClass" parameterType="pd" resultType="pd">
+		SELECT DISTINCT twoclass from t_reimfy
+	</select>
+	
+	<select id="findReimfyById" parameterType="pd" resultType="com.fh.pojo.tbreimfy">
+		SELECT * from t_reimfy where reimfyid=#{reimfyid}
+	</select>
+
+	<update id="updateReimfy" parameterType="pd" >
+		UPDATE
+			t_reimfy
+		SET
+			oneclass=#{oneclass},
+			twoclass=#{twoclass},
+			classdec=#{classdec},
+			source=#{source},
+			username=#{username},
+			cztime=#{cztime}
+		WHERE
+			reimfyid=#{reimfyid}
+	</update>
+	
+	<insert id="insertReimfy" parameterType="pd">
+		INSERT INTO
+			t_reimfy
+		(
+			oneclass,
+			twoclass,
+			classdec,
+			source,
+			username,
+			cztime
+			)VALUES (
+			#{oneclass},
+			#{twoclass},
+			#{classdec},
+			#{source},
+			#{username},
+			#{cztime}
+		)
+	</insert>
+	
+	<delete id="deleteReimfy" parameterType="pd">
+		  DELETE FROM
+		  	t_reimfy
+		  WHERE reimfyid=#{reimfyid}
+	</delete>
+</mapper>

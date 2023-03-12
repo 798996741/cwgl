@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ReimdetMapper">
+
+    <select id="FindAllList" parameterType="pd" resultType="pd">
+        SELECT a.*,
+        b.classname AS oneclassname,
+        c.classname AS twoclassname,
+        d.classname AS threeclassname,
+        e.classname AS fourclassname
+        FROM t_reimdet a
+        LEFT JOIN t_reimfy b ON b.encode=a.oneclass
+        LEFT JOIN t_reimfy c ON c.encode=a.twoclass
+        LEFT JOIN t_reimfy d ON c.encode=a.threeclass
+        LEFT JOIN t_reimfy e ON c.encode=a.fourclass
+        WHERE 1=1
+        <if test="csname != null and csname != ''">
+            and csname=#{csname}
+        </if>
+        <if test="time1 != null and time1 != '' and time2 != null and time2 != '' and reimtime == null or reimtime == ''">
+            and (time BETWEEN #{time1} AND #{time2})
+        </if>
+        <if test="reimtime != null and reimtime != ''">
+            and time = DATE_FORMAT(#{reimtime},'%Y-%m-%d')
+        </if>
+
+        <if test="oneclass != null and oneclass != ''">
+            and oneclass=#{oneclass}
+        </if>
+        <if test="twoclass != null and twoclass != ''">
+            and twoclass=#{twoclass}
+        </if>
+        <if test="threeclass != null and threeclass != ''">
+            and threeclass=#{threeclass}
+        </if>
+        <if test="fourclass != null and fourclass != ''">
+            and fourclass=#{fourclass}
+        </if>
+        <if test="isapply != null and isapply != ''">
+            and isapply=#{isapply}
+        </if>
+        <if test="isreim != null and isreim != ''">
+            and isreim=#{isreim}
+        </if>
+        <if test="proclass != null and proclass != ''">
+            and proclass=#{proclass}
+        </if>
+        <if test="ispur != null and ispur != ''">
+            and ispur=#{ispur}
+        </if>
+        <if test="billtype != null and billtype != ''">
+            and billtype=#{billtype}
+        </if>
+        <if test="name != null and name != ''">
+            and name=#{name}
+        </if>
+        <if test="isaudit != null and isaudit != ''">
+            and isaudit=#{isaudit}
+        </if>
+
+        <if test="keywords!= null and keywords != ''">
+            AND
+            (
+            csname LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            time LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            name LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            reason LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            oneclass LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            twoclass LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            threeclass LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            fourclass LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            proclass LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            remark LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            realmon LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            tripmon LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            realmon LIKE CONCAT(CONCAT('%', #{keywords}),'%') or
+            oneclassname LIKE CONCAT(CONCAT('%', #{keywords}),'%') or
+            twoclassname LIKE CONCAT(CONCAT('%', #{keywords}),'%') or
+            threeclassname LIKE CONCAT(CONCAT('%', #{keywords}),'%') or
+            fourclassname LIKE CONCAT(CONCAT('%', #{keywords}),'%') or
+            )
+        </if>
+    </select>
+    <select id="getclassname" parameterType="pd" resultType="pd">
+        SELECT classname,encode from t_reimfy where encode=#{encode}
+    </select>
+    <select id="getOneclass" parameterType="pd" resultType="pd">
+        SELECT classname as oneclass,encode from t_reimfy where encode like '____'
+    </select>
+    <select id="getTowclass" parameterType="pd" resultType="pd">
+        SELECT classname as twoclass,encode from t_reimfy where encode like '_______'
+    </select>
+    <select id="getThreeclass" parameterType="pd" resultType="pd">
+        SELECT classname as threeclass,encode from t_reimfy where encode like '_________'
+    </select>
+    <select id="getfourclass" parameterType="pd" resultType="pd">
+        SELECT classname as fourclass,encode from t_reimfy where encode like '___________'
+    </select>
+
+
+    <select id="getPdec" parameterType="pd" resultType="pd">
+        SELECT DISTINCT pdesc from t_pm
+    </select>
+
+    <select id="getcsname" parameterType="pd" resultType="pd">
+        SELECT DISTINCT csname FROM t_subcom
+    </select>
+
+    <select id="getname" parameterType="pd" resultType="pd">
+        SELECT DISTINCT name FROM SYS_USER
+    </select>
+
+    <select id="getUser" parameterType="pd" resultType="pd">
+        SELECT * FROM SYS_USER WHERE username=#{username}
+    </select>
+
+    <select id="findReimdetById" parameterType="pd" resultType="pd">
+        SELECT * FROM t_reimdet WHERE reimdetid=#{reimdetid}
+    </select>
+
+    <select id="updateReimdet" parameterType="pd">
+        UPDATE
+          t_reimdet
+        SET
+            csname=#{csname},
+            time=DATE_FORMAT(#{time},'%Y-%m-%d'),
+            name=#{name},
+            reason=#{reason},
+            oneclass=#{oneclass},
+            twoclass=#{twoclass},
+            threeclass=#{threeclass},
+            fourclass=#{fourclass},
+            reimmon=#{reimmon},
+            tripmon=#{tripmon},
+            realmon=#{realmon},
+            proclass=#{proclass},
+            billtype=#{billtype},
+            isapply=#{isapply},
+            ispur=#{ispur},
+            isreim=#{isreim},
+            remark=#{remark},
+            isaudit=#{isaudit},
+            filname=#{filname},
+            date=#{date}
+          WHERE
+            reimdetid=#{reimdetid}
+    </select>
+
+    <delete id="deleteReimdetbyid" parameterType="pd">
+        DELETE FROM t_reimdet WHERE reimdetid=#{reimdetid}
+    </delete>
+
+    <insert id="insertReimdet" parameterType="pd">
+        INSERT INTO
+          t_reimdet(
+            csname,
+            time,
+            name,
+            reason,
+            oneclass,
+            twoclass,
+            threeclass,
+            fourclass,
+            reimmon,
+            tripmon,
+            realmon,
+            proclass,
+            billtype,
+            isapply,
+            ispur,
+            isreim,
+            remark,
+            isaudit,
+            auditor,
+            filname,
+            date
+          )VALUES (
+            #{csname},
+            #{time},
+            #{name},
+            #{reason},
+            #{oneclass},
+            #{twoclass},
+            #{threeclass},
+            #{fourclass},
+            #{reimmon},
+            #{tripmon},
+            #{realmon},
+            #{proclass},
+            #{billtype},
+            #{isapply},
+            #{ispur},
+            #{isreim},
+            #{remark},
+            #{isaudit},
+            #{auditor},
+            #{filname},
+            #{date}
+          )
+    </insert>
+
+    <select id="getReimname" parameterType="pd" resultType="pd">
+        select DISTINCT name
+        FROM t_reimdet
+        WHERE 1=1
+        <if test="csname != null and csname != ''">
+            AND csname=#{csname}
+        </if>
+        <if test="time1 != null and time2 != null">
+            AND (time BETWEEN #{time1} AND #{time2})
+        </if>
+        <if test="isaudit != null and isaudit != ''">
+            and isaudit=#{isaudit}
+        </if>
+        <if test="isreim != null and isreim != ''">
+            and isreim=#{isreim}
+        </if>
+    </select>
+    <select id="getReimstat" parameterType="pd" resultType="pd">
+        select a.oneclass,a.name,a.realmon,a.csname,a.time,a.isreim,b.classname as oneclassname
+        FROM t_reimdet a LEFT JOIN t_reimfy b ON b.encode=a.oneclass
+        WHERE 1=1
+        <if test="csname != null and csname != ''">
+            AND csname=#{csname}
+        </if>
+        <if test="time1 != null and time1 != '' and time2 != null and time2 != ''">
+            AND (time BETWEEN #{time1} AND #{time2})
+        </if>
+        <if test="isaudit != null and isaudit != ''">
+            and isaudit=#{isaudit}
+        </if>
+        <if test="isreim != null and isreim != ''">
+            and isreim=#{isreim}
+        </if>
+        <if test="proce=='1'">
+            and (isaudit='0' or isaudit='3')
+        </if>
+    </select>
+    <select id="shWarn" resultType="pd" parameterType="pd">
+         SELECT csname,time FROM t_reimdet WHERE isaudit='3'
+    </select>
+    <select id="sh2Warn" resultType="pd" parameterType="pd">
+         SELECT csname,time FROM t_reimdet WHERE isaudit='2'
+    </select>
+    <select id="bxWarn" resultType="pd" parameterType="pd">
+         SELECT csname,time FROM t_reimdet WHERE isreim='1'
+    </select>
+    <select id="updateIsreim" parameterType="pd">
+        UPDATE
+          t_reimdet
+        SET
+            isreim=#{isreim}
+          WHERE
+            reimdetid=#{reimdetid}
+    </select>
+</mapper>

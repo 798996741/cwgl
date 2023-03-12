@@ -1,0 +1,112 @@
+﻿<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
+<%
+	String path = request.getContextPath();
+	String basePath = request.getScheme() + "://"
+			+ request.getServerName() + ":" + request.getServerPort()
+			+ path + "/";
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<base href="<%=basePath%>">
+
+<!-- jsp文件头和头部 -->
+<jsp:include page="../include/incJs_old.jsp"></jsp:include>
+</head>
+<body class="no-skin" style="background:rgb(236,240,245)">
+
+	<!-- /section:basics/navbar.layout -->
+	<div class="main-container" id="main-container">
+		
+        <section class="content" style="background:rgb(236,240,245)">
+        
+        	 <div class="row">
+		        
+		      <section class="content-header padbottom15">
+		        <h1><font><font>关注任务 </font></font></h1>
+		        <ol class="breadcrumb">
+		          <li class="active"><font><font></font></font></li>
+		        </ol>
+		      </section>
+		      <div class="row card-row" style="padding-left:10px;">
+		        ${rwstr }
+		      </div>
+		      </div>
+			<textarea id="text" name="text" ></textarea>
+        </section>
+    </div>
+	<!-- /.main-container -->
+
+	<!-- basic scripts -->
+	<!-- 页面底部js¨ -->
+	<%@ include file="../index/foot.jsp"%>
+	<!-- ace scripts -->
+	<script src="static/js/ace.js"></script>
+	<!-- inline scripts related to this page -->
+	<script type="text/javascript">
+		//$(top.hangge());
+		function zxrw(action,ID,CUSTOM_TEMPLATE_ID,NAIRE_TEMPLATE_ID,TABLENAME,WCJD,ZXMAN,FPTYPE){
+			//alert(TABLENAME);
+			if(action=='1'){
+				top.mainFrame.tabAddHandler("z2","待回访任务","<%=basePath%>exetask/list.do?action=1&ID="+ID+"&CUSTOM_TEMPLATE_ID="+CUSTOM_TEMPLATE_ID+"&NAIRE_TEMPLATE_ID="+NAIRE_TEMPLATE_ID+"&TABLENAME="+TABLENAME+"&WCJD="+WCJD+"&ZXMAN="+ZXMAN+"&FPTYPE="+FPTYPE+"");
+			}
+			if(action=='2'){
+				top.mainFrame.tabAddHandler("z326","客户回访","<%=basePath%>taskcustom/list.do");
+			}
+		}
+
+
+		 window.onload = function () {
+			 var text= "";
+
+			$.ajax({
+				type: 'post',
+				url: '<%=basePath%>reimdet/reimWarn.do',
+				contentType:'application/json',
+				cache: false,
+				dataType: 'json',
+				success: function (data) {
+					if ("msg" != data) {
+						console.log(data.map.hqbx);
+						var var1=[];
+						var var2=[];
+						var var3=[];
+						var1=data.map.zwsh;
+						var2=data.map.cldb;
+						var3=data.map.hqbx;
+						if (var1!=null){
+							for(var i = 0;i<var1.length;i++){
+								console.log(var1[i])
+								text+=var1[i]+'月存在暂未审核情况<br/>'
+							}
+						}
+						if (var2!=null){
+							for(var i = 0;i<var2.length;i++){
+								console.log(var2[i])
+								text+=var2[i]+'月存在暂未审核，材料待补情况<br/>'
+							}
+						}
+						if (var3!=null){
+							for(var i = 0;i<var3.length;i++){
+								console.log(var3[i])
+								text+=var3[i]+'月存在后期报销情况<br/>'
+							}
+						}
+						console.log(text)
+						document.getElementById("text").value=text;
+					} else {
+						confirm("保存失败")
+					}
+				}
+			})
+
+
+
+		}
+	</script>
+<script type="text/javascript" src="static/js/jquery.js"></script>
+</body>
+</html>

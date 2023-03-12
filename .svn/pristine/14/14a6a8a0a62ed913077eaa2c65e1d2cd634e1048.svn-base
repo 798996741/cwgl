@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="SellMapper">
+
+    <!-- 字段 -->
+    <sql id="Contract">
+        conid,
+        cno,
+        pno,
+        clino,
+        conno,
+        signtime,
+        purno,
+        asign,
+        bsign
+    </sql>
+    <sql id="Contmon">
+        conmid,
+        conid,
+        consmon,
+        conamon,
+        connmon,
+        paymet,
+        paymon,
+        paytime
+    </sql>
+    <sql id="Invmon">
+        invsmon,
+        invmid,
+        conid,
+        invtime,
+        invamon,
+        invcontent,
+        tax,
+        invnmon,
+        paymon
+    </sql>
+    <sql id="Busimon">
+        busimid,
+        conid,
+        busismon,
+        busiamon,
+        busitime,
+        businmon,
+        paymon
+    </sql>
+    <!--获取公司编码-->
+    <select id="getCno" resultType="pd" parameterType="pd">
+        SELECT DISTINCT(t_subcom.cno),csname FROM t_subcom LEFT JOIN t_contract ON t_contract.cno=t_subcom.cno
+    </select>
+    <!--获取项目编码-->
+    <select id="getPno" resultType="pd" parameterType="pd">
+        SELECT DISTINCT(t_pm.pno),pdesc FROM t_pm LEFT JOIN  t_contract ON t_contract.pno=t_pm.pno
+    </select>
+    <!--获取客户编码-->
+    <select id="getClino" resultType="pd" parameterType="pd">
+        SELECT DISTINCT(t_client.clino),clisname FROM t_client LEFT JOIN  t_contract ON t_contract.clino=t_client.clino
+    </select>
+    <!--获取供应商编码-->
+    <select id="getSupno" resultType="pd" parameterType="pd">
+        SELECT DISTINCT(t_supplier.supno),supsname FROM t_supplier LEFT JOIN  t_contract ON t_contract.clino=t_supplier.supno
+    </select>
+    <!--获取销售列表-->
+    <select id="findSellContract" resultType="pd" parameterType="pd">
+        SELECT b.conid,pno,isarc,cno,isaudit,place,busiexp,paymet,clino,conno,state,signtime,type,consmon,asign,bsign,purno,isarc,busismon,busiexp,paymet,conmid,connmon,invmid,invnmon
+        FROM t_contract b
+        LEFT JOIN (SELECT * FROM( SELECT * FROM t_contmon ORDER BY conmid DESC) AS a GROUP BY conid ) c ON c.conid=b.conid
+        LEFT JOIN (SELECT * FROM( SELECT * FROM t_invmon ORDER BY invmid DESC) AS d GROUP BY conid ) e ON e.conid=b.conid
+        HAVING  1=1
+        <if test="clino != null and clino != ''">
+            AND clino = #{clino}
+        </if>
+        <if test="cno != null and cno != ''">
+            AND cno = #{cno}
+        </if>
+        <if test="state != null and state != ''">
+            AND state=#{state}
+        </if>
+        <if test="isarc != null and isarc != ''">
+            AND isarc=#{isarc}
+        </if>
+        <if test="signtime1 != null and signtime1 != ''">
+            AND (signtime BETWEEN DATE_FORMAT(#{signtime1},'%Y-%m-%d') AND DATE_FORMAT(#{signtime2},'%Y-%m-%d'))
+        </if>
+        <if test="connmon == 0 and connmon!='' and invnmon==''">
+            and (connmon != 0 OR connmon IS NULL)
+        </if>
+        <if test="connmon == 1 and connmon!='' and invnmon==''">
+            and connmon = 0
+        </if>
+        <if test="invnmon == 0 and invnmon!='' and connmon == ''">
+            and (invnmon != 0 OR invnmon IS NULL)
+        </if>
+        <if test="invnmon == 1 and invnmon!='' and connmon == ''">
+            and invnmon = 0
+        </if>
+        <if test="connmon == 0 and invnmon == 0 and connmon!='' and invnmon!=''">
+            AND (connmon != 0 OR connmon IS NULL OR invnmon != 0 OR invnmon IS NULL)
+        </if>
+        <if test="connmon == 1 and invnmon == 1 and connmon!='' and invnmon!=''">
+            AND (connmon = 0 OR invnmon = 0)
+        </if>
+        <if test="connmon == 0 and invnmon == 1 and connmon!='' and invnmon!=''">
+            AND (connmon != 0 OR connmon IS NULL OR invnmon = 0)
+        </if>
+        <if test="connmon == 1 and invnmon == 0 and connmon!='' and invnmon!=''">
+            AND (connmon = 0  OR invnmon != 0 OR invnmon IS NULL)
+        </if>
+        <if test="state == 0">
+            AND state=0
+        </if>
+        <if test="keywords!= null and keywords != ''">
+            AND
+            (
+            clino LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            cno LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            pno LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            conno LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            place LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            paymet LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            busiexp LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            consmon LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            busismon LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+            )
+        </if>
+        AND (TYPE='S' or TYPE = 'Q')
+    </select>
+    <!--获取采购列表-->
+    <select id="findPurContract" resultType="pd" parameterType="pd">
+        SELECT b.conid,pno,isarc,cno,clino,place,busiexp,paymet,isaudit,conno,state,signtime,type,asign,bsign,purno,isarc,busismon,busiexp,paymet,consmon,conmid,connmon,invmid,invnmon
+        FROM t_contract b
+        LEFT JOIN (SELECT * FROM( SELECT * FROM t_contmon ORDER BY conmid DESC) AS a GROUP BY conid ) c ON c.conid=b.conid
+        LEFT JOIN (SELECT * FROM( SELECT * FROM t_invmon ORDER BY invmid DESC) AS d GROUP BY conid ) e ON e.conid=b.conid
+        HAVING  1=1
+        <if test="clino != null and clino != ''">
+            AND clino = #{clino}
+        </if>
+        <if test="cno != null and cno != ''">
+            AND cno = #{cno}
+        </if>
+        <if test="state != null and state != ''">
+            AND state=#{state}
+        </if>
+        <if test="isarc != null and isarc != ''">
+            AND isarc=#{isarc}
+        </if>
+        <if test="signtime1 != null and signtime1 != ''">
+            AND (signtime BETWEEN DATE_FORMAT(#{signtime1},'%Y-%m-%d') AND DATE_FORMAT(#{signtime2},'%Y-%m-%d'))
+        </if>
+        <if test="connmon == 0 and connmon!='' and invnmon==''">
+            and (connmon != 0 OR connmon IS NULL)
+        </if>
+        <if test="connmon == 1 and connmon!='' and invnmon==''">
+            and connmon = 0
+        </if>
+        <if test="invnmon == 0 and invnmon!='' and connmon == ''">
+            and (invnmon != 0 OR invnmon IS NULL)
+        </if>
+        <if test="invnmon == 1 and invnmon!='' and connmon == ''">
+            and invnmon = 0
+        </if>
+        <if test="connmon == 0 and invnmon == 0 and connmon!='' and invnmon!=''">
+            AND (connmon != 0 OR connmon IS NULL OR invnmon != 0 OR invnmon IS NULL)
+        </if>
+        <if test="connmon == 1 and invnmon == 1 and connmon!='' and invnmon!=''">
+            AND (connmon = 0 OR invnmon = 0)
+        </if>
+        <if test="connmon == 0 and invnmon == 1 and connmon!='' and invnmon!=''">
+            AND (connmon != 0 OR connmon IS NULL OR invnmon = 0)
+        </if>
+        <if test="connmon == 1 and invnmon == 0 and connmon!='' and invnmon!=''">
+            AND (connmon = 0  OR invnmon != 0 OR invnmon IS NULL)
+        </if>
+        <if test="keywords!= null and keywords != ''">
+            AND
+            (
+            clino LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            cno LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            pno LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            conno LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            place LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            paymet LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            busiexp LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            consmon LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            busismon LIKE CONCAT(CONCAT('%', #{keywords}),'%') OR
+            signtime LIKE CONCAT(CONCAT('%', #{keywords}),'%')
+            )
+        </if>
+         AND (TYPE='B' or TYPE = 'Q')
+    </select>
+    <select id="maxConid" resultType="pd" parameterType="pd">
+        SELECT max(conid) as conid FROM t_contract
+    </select>
+    <!--获取一个合同对象-->
+    <select id="findContractById" resultType="com.fh.pojo.tbcontract" parameterType="pd">
+        SELECT * FROM t_contract WHERE conid=#{conid}
+    </select>
+    <!--获取合同金额列表-->
+    <select id="findContmon" resultType="com.fh.pojo.tbcontmon" parameterType="pd">
+        SELECT * FROM t_contmon WHERE conid=#{conid}
+    </select>
+    <!--获取开票金额列表-->
+    <select id="findInvmon" resultType="com.fh.pojo.tbinvmon" parameterType="pd">
+        SELECT * FROM t_invmon WHERE conid=#{conid}
+    </select>
+    <!--获取商务金额列表-->
+    <select id="findBusimon" resultType="com.fh.pojo.tbbusimon" parameterType="pd">
+        SELECT * FROM t_busimon WHERE conid=#{conid}
+    </select>
+    <!-- 根据最大时间查找最后一条插入的记录 -->
+    <select id="lastContmon" resultType="com.fh.pojo.tbcontmon" parameterType="pd">
+        SELECT
+        *
+        FROM (SELECT * FROM t_contmon ORDER BY conmid DESC) AS a
+        WHERE conid=#{conid}
+        GROUP BY conid
+    </select>
+    <select id="lastInvmon" resultType="com.fh.pojo.tbinvmon" parameterType="pd">
+        SELECT
+        *
+        FROM( SELECT * FROM t_invmon ORDER BY invmid DESC) AS a
+        WHERE conid=#{conid}
+        GROUP BY conid
+    </select>
+    <select id="lastBusimon" resultType="com.fh.pojo.tbbusimon" parameterType="pd">
+        SELECT
+        *
+        FROM( SELECT * FROM t_busimon ORDER BY busimid DESC) AS a
+        WHERE conid=#{conid}
+        GROUP BY conid
+    </select>
+
+    <delete id="deleteContract" parameterType="pd">
+        DELETE FROM t_contract WHERE conid=#{conid}
+    </delete>
+
+    <delete id="deleteContmon" parameterType="pd">
+        DELETE FROM t_contmon WHERE conmid=#{conmid}
+    </delete>
+
+    <delete id="deleteInvmon" parameterType="pd">
+        DELETE FROM t_invmon WHERE invmid=#{invmid}
+    </delete>
+
+    <delete id="deleteBusimon" parameterType="pd">
+        DELETE FROM t_busimon WHERE busimid=#{busimid}
+    </delete>
+
+    <insert id="insertContract" parameterType="com.fh.pojo.tbcontract">
+        insert into
+          t_contract
+          (
+        cno,
+        pno,
+        clino,
+        conno,
+        signtime,
+        purno,
+        asign,
+        bsign,
+        type,
+        consmon,
+        busismon,
+        isarc,
+        place,
+        paymet,
+        busiexp,
+        state,
+        isaudit
+          )
+        values
+          (
+           #{cno},
+           #{pno},
+           #{clino},
+           #{conno},
+           #{signtime},
+           #{purno},
+           #{asign},
+           #{bsign},
+           #{type},
+           #{consmon},
+           #{busismon},
+           #{isarc},
+           #{place},
+           #{paymet},
+           #{busiexp},
+           #{state},
+           #{isaudit}
+          )
+    </insert>
+    <insert id="insertContract1" parameterType="pd">
+        insert into
+        t_contract
+        (
+        cno,
+        pno,
+        clino,
+        conno,
+        signtime,
+        purno,
+        asign,
+        bsign,
+        type,
+        consmon,
+        busismon,
+        isarc,
+        place,
+        paymet,
+        busiexp,
+        state,
+        isaudit
+        )
+        values
+        (
+        #{cno},
+        #{pno},
+        #{clino},
+        #{conno},
+        #{signtime},
+        #{purno},
+        #{asign},
+        #{bsign},
+        #{type},
+        #{consmon},
+        #{busismon},
+        #{isarc},
+        #{place},
+        #{paymet},
+        #{busiexp},
+        #{state},
+        #{isaudit}
+        )
+    </insert>
+    <insert id="insertContmon" parameterType="com.fh.pojo.tbcontmon" >
+         insert into
+          t_contmon
+          (
+            conid,
+            conamon,
+            connmon,
+            paymon,
+            paytime,
+            username,
+            cztime
+          )
+        values
+          (
+           #{conid},
+           #{conamon},
+           #{connmon},
+           #{paymon},
+           #{paytime},
+           #{username},
+           #{cztime}
+          )
+    </insert>
+    <insert id="insertInvmon" parameterType="com.fh.pojo.tbinvmon" >
+        insert into
+        t_invmon
+        (
+        conid,
+        invtime,
+        invamon,
+        invcontent,
+        tax,
+        invnmon,
+        paymon,
+        username,
+        cztime
+        )
+        values
+        (
+        #{conid},
+        #{invtime},
+        #{invamon},
+        #{invcontent},
+        #{tax},
+        #{invnmon},
+        #{paymon},
+        #{username},
+        #{cztime}
+        )
+    </insert>
+    <insert id="insertBusimon" parameterType="com.fh.pojo.tbbusimon" >
+        insert into
+        t_busimon
+        (
+        conid,
+        busiamon,
+        busitime,
+        businmon,
+        paymon,
+        username,
+        cztime,
+        payee,
+        remark
+        )
+        values
+        (
+        #{conid},
+        #{busiamon},
+        #{busitime},
+        #{businmon},
+        #{paymon},
+        #{username},
+        #{cztime},
+        #{payee},
+        #{remark}
+        )
+    </insert>
+    <insert id="insertContmon1" parameterType="pd" >
+        insert into
+        t_contmon
+        (
+        conid,
+        conamon,
+        connmon,
+        paymon,
+        paytime,
+        username,
+        cztime
+        )
+        values
+        (
+        #{conid},
+        #{conamon},
+        #{connmon},
+        #{paymon},
+        #{paytime},
+        #{username},
+        #{cztime}
+        )
+    </insert>
+    <insert id="insertInvmon1" parameterType="pd" >
+        insert into
+        t_invmon
+        (
+        conid,
+        invtime,
+        invamon,
+        invcontent,
+        tax,
+        invnmon,
+        paymon,
+        username,
+        cztime
+        )
+        values
+        (
+        #{conid},
+        #{invtime},
+        #{invamon},
+        #{invcontent},
+        #{tax},
+        #{invnmon},
+        #{paymon},
+        #{username},
+        #{cztime}
+        )
+    </insert>
+    <insert id="insertBusimon1" parameterType="pd" >
+        insert into
+        t_busimon
+        (
+        conid,
+        busiamon,
+        busitime,
+        businmon,
+        paymon,
+        username,
+        cztime,
+        payee,
+        remark
+        )
+        values
+        (
+        #{conid},
+        #{busiamon},
+        #{busitime},
+        #{businmon},
+        #{paymon},
+        #{username},
+        #{cztime},
+        #{payee},
+        #{remark}
+        )
+    </insert>
+    <update id="updateContractById" parameterType="com.fh.pojo.tbcontract">
+        update
+          t_contract
+        set
+          cno=#{cno},
+          pno=#{pno} ,
+          clino=#{clino},
+          conno=#{conno},
+          signtime =#{signtime},
+          purno =#{purno},
+          asign =#{asign},
+          bsign =#{bsign},
+          type =#{type},
+          consmon =#{consmon},
+          busismon=#{busismon},
+          isarc =#{isarc},
+          place =#{place},
+          paymet =#{paymet},
+          busiexp =#{busiexp},
+          state =#{state},
+          isaudit =#{isaudit}
+        where
+          conid=#{conid}
+    </update>
+    <update id="updateContmonById" parameterType="com.fh.pojo.tbcontmon">
+        update
+          t_contmon
+        set
+          conid=#{conid},
+          conamon=#{conamon},
+          connmon=#{connmon},
+          paymon=#{paymon},
+          paytime =#{paytime},
+          username =#{username},
+          cztime =#{cztime}
+        where
+         conmid=#{conmid}
+    </update>
+    <update id="updateInvmonById" parameterType="com.fh.pojo.tbinvmon">
+        update
+        t_invmon
+        set
+        conid=#{conid},
+        invtime=#{invtime} ,
+        invamon=#{invamon},
+        invcontent=#{invcontent},
+        tax =#{tax},
+        invnmon =#{invnmon},
+        paymon =#{paymon},
+        username =#{username},
+        cztime =#{cztime},
+        where
+        invmid=#{invmid}
+    </update>
+    <update id="updateBusimonById" parameterType="com.fh.pojo.tbbusimon">
+        update
+        t_busimon
+        set
+        conid=#{conid},
+        busiamon=#{busiamon},
+        busitime=#{busitime},
+        businmon=#{businmon},
+        paymon=#{paymon},
+        username=#{username},
+        cztime=#{cztime},
+        payee=#{payee},
+        remark=#{remark}
+        where
+        busimid=#{busimid}
+    </update>
+
+</mapper>

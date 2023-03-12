@@ -1,0 +1,500 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+         pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%
+    String path = request.getContextPath();
+    String basePath = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + path + "/";
+%>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <base href="<%=basePath%>">
+    <!-- 下拉框 -->
+    <style>
+        ul li {
+            line-height: 30px;
+            list-style-type: none
+        }
+    </style>
+    <!-- 日期框 -->
+    <link rel="stylesheet" href="static/ace/css/datepicker.css"/>
+    <link rel="stylesheet" href="static/login/css/main.css">
+    <link rel="stylesheet" href="static/css/mask.css">
+</head>
+
+<body class="no-skin">
+
+<!-- Horizontal Form -->
+<!-- 弹框内容 -->
+<div>
+    <div class="mask">
+        <div id="darkmask" class="darkmask">
+            <div class="mask-top">
+                <span class="mask-top-size" style="letter-spacing: 3px;"><b>新&nbsp;&nbsp;增</b></span>
+                <img src="static/login/img/modal/delete_icon.png"
+                     style="width:22px;height:22px;margin-right: 25px;cursor: pointer;"
+                     data-dismiss="modal">
+            </div>
+            <div class="mask-main">
+
+                <form name="form_add" id="form_add">
+                    <input type="hidden" name="USER_ID" id="user_id" value="${pd.USER_ID }"/>
+
+
+                    <c:if test="${fx == 'head'}">
+                        <input name="ROLE_ID" id="role_id" value="${pd.ROLE_ID }"
+                               type="hidden"/>
+                    </c:if>
+                    <input type="hidden" name="auditor" id="auditor" value="${reimdet.auditor}"/>
+                    <input type="hidden" name="reimdetid" id="reimdetid" value="${reimdet.reimdetid}"/>
+
+                    <input type="hidden" name="filname" id="filname" value="${reimdet.filname}"/>
+                    <input type="hidden" name="csname" id="csname" value="
+                    <c:if test="${msg == 'insertReimdet' }"> ${pd.csname}</c:if>
+                    <c:if test="${msg == 'updateReimdet' }"> ${reimdet.csname}</c:if>
+                    "/>
+                    <input type="hidden" name="date" id="date" value="
+                    <c:if test="${msg == 'insertReimdet' }"> ${pd.time}</c:if>
+                    <c:if test="${msg == 'updateReimdet' }"> ${reimdet.date}</c:if>
+                    "/>
+                    <input type="hidden" name="isaudit" id="isaudit1" value="${reimdet.isaudit}"/>
+                    <div class="between-center">
+                        <div class="between-center padding-8px">
+                            <span class="mask-size flex-row-between"
+                                  style="display: flex;flex-direction:row;justify-content: space-between;">
+                            <font style="color: red;">*</font>报销日期
+                          </span>
+                            <input class="date-picker" autocomplete="off" name="time" id="time"
+                                   value="${reimdet.time}" type="text" data-date-format="yyyy-mm-dd" style="width: 136px;
+                  height: 24px;
+                  line-height: 24px;
+                  border-radius: 5px;
+                  border: rgba(0, 0, 0, 0);
+                  background: url('static/login/img/home/date_icon.png') no-repeat scroll 90% center transparent;
+                  background-size: 15px;
+                  background-color: #fff;
+                  cursor: pointer;
+                  padding-left: 5px;"/>
+                        </div>
+                        <div class="between-center padding-8px">
+                            <span class="mask-size flex-row-between"
+                                  style="display: flex;flex-direction:row;justify-content: space-between;">
+                            <font style="color: red;">*</font>报&nbsp;销&nbsp;人
+                          </span>
+                            <input type="text" name="name" id="name" autoComplete="off" class="mask-input"
+                                   value="${reimdet.name}"/>
+                        </div>
+                        <div class="between-center padding-8px">
+                          <span class="mask-size flex-row-between"
+                                style="display: flex;flex-direction:row;justify-content: space-between;">
+                            <font style="color: red;">*</font>报销事由
+                          </span>
+                            <input type="text" name="reason" id="reason" autoComplete="off" class="mask-input"
+                                   value="${reimdet.reason}"/>
+                        </div>
+                    </div>
+                    <div class="between-center">
+                        <div class="between-center padding-8px">
+                  <span class="mask-size  flex-row-between"
+                        style="display: flex;flex-direction:row;justify-content: space-between;">
+                    <font style="color: red;">*</font>报销分类
+                  </span>
+                            <select class="system-select-2" name="oneclass" id="oneclass1" >
+                                <option value="" selected></option>
+                                <c:forEach items="${oneClass}" var="oneClass" varStatus="vs">
+                                    <option value="${oneClass.oneclass}"
+                                            <c:if test="${oneClass.oneclass==reimdet.oneclass}">selected</c:if>
+                                    > ${oneClass.oneclass}</option>
+
+                                </c:forEach>
+                            </select>
+                        </div>
+                        <div class="between-center padding-8px">
+                  <span class="mask-size  flex-row-between"
+                        style="display: flex;flex-direction:row;justify-content: space-between;">
+                    <font style="color: red;">*</font>二级分类
+                  </span>
+                            <select class="system-select-2" name="twoclass" id="twoclass">
+                                <option value="" selected></option>
+                                <c:forEach items="${twoClass}" var="twoClass" varStatus="vs">
+                                    <option value="${twoClass.twoclass}"
+                                            <c:if test="${twoClass.twoclass==reimdet.twoclass}">selected</c:if>
+                                    > ${twoClass.twoclass}</option>
+
+                                </c:forEach>
+                            </select>
+                        </div>
+                        <div class="between-center padding-8px">
+                          <span class="mask-size flex-row-between"
+                                style="display: flex;flex-direction:row;justify-content: space-between;">
+                            <font style="color: red;">*</font>报销金额
+                          </span>
+                            <input type="text" class="mask-input" name="reimmon" id="reimmon" value="${reimdet.reimmon}"
+                                   onchange="calmon();"/>
+                        </div>
+                    </div>
+                    <div class="between-start">
+                        <div class="between-center padding-8px"><span class="mask-size"
+                                                                      style="display: flex;flex-direction:row;justify-content: space-between;">
+                                      <font style="color: red;">*</font>差旅补贴
+                                    </span>
+                            <input type="text" class="mask-input" name="tripmon" id="tripmon" value="${reimdet.tripmon}"
+                                   onchange="calmon();"/>
+                        </div>
+
+                        <div class="between-center padding-8px">
+                            <span class="mask-size flex-row-between"
+                                  style="display: flex;flex-direction:row;justify-content: space-between;">
+                              <font style="color: red;">*</font>实报金额
+                            </span>
+                            <input type="text" class="mask-input" name="realmon" id="realmon"
+                                   value="${reimdet.realmon}"/>
+
+                        </div>
+                        <div class="between-center padding-8px">
+                            <span class="mask-size flex-row-between"
+                                  style="display: flex;flex-direction:row;justify-content: space-between;">
+                              <font style="color: red;">*</font>项目分类
+                            </span>
+                            <select class="system-select-2" name="proclass" id="proclass">
+                                <option value="" selected></option>
+                                <c:forEach items="${pdec}" var="pdec" varStatus="vs">
+                                    <option value="${pdec.pdesc}"
+                                            <c:if test="${pdec.pdesc==reimdet.proclass}">selected</c:if>
+                                    > ${pdec.pdesc}</option>
+
+                                </c:forEach>
+                            </select>
+
+                        </div>
+                    </div>
+                    <div class="between-start">
+                        <div class="between-center padding-8px">
+                  <span class="mask-size"
+                        style="display: flex;flex-direction:row;justify-content: space-between;">
+                    <font style="color: red;">*</font>票据类型
+                  </span>
+                            <select class="system-select-2" name="billtype" id="billtype">
+                                <option value=""
+                                        <c:if test="${reimdet.billtype=='' or reimdet.billtype==null}">selected</c:if>></option>
+                                <option value="0" <c:if test="${reimdet.billtype=='0'}">selected</c:if>>发票</option>
+                                <option value="1" <c:if test="${reimdet.billtype=='1'}">selected</c:if>>收据</option>
+                                <option value="2" <c:if test="${reimdet.billtype=='2'}">selected</c:if>>付款截图</option>
+                            </select>
+                        </div>
+                        <div class="flex-row between-start padding-8px">
+                            <span class="mask-size">是否有出差<br>申请单</span>
+                            <select class="system-select-2" id="isapply" name="isapply">
+                                <option value=""
+                                        <c:if test="${reimdet.isapply=='' or reimdet.isapply==null}">selected</c:if>></option>
+                                <option value="0" <c:if test="${reimdet.isapply=='0'}">selected</c:if>>是</option>
+                                <option value="1" <c:if test="${reimdet.isapply=='1'}">selected</c:if>>否</option>
+                            </select>
+                        </div>
+                        <div class="between-center padding-8px">
+                            <span class="mask-size">是否有采购<br>申请单</span>
+                            <select class="system-select-2" name="ispur" id="ispur">
+                                <option value=""
+                                        <c:if test="${reimdet.ispur=='' or reimdet.ispur==null}">selected</c:if>></option>
+                                <option value="0" <c:if test="${reimdet.ispur=='0'}">selected</c:if>>是</option>
+                                <option value="1" <c:if test="${reimdet.ispur=='1'}">selected</c:if>>否</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="between-start">
+                        <div class="between-center padding-8px">
+                            <span class="mask-size">是否已报销</span>
+                            <select class="system-select-2" name="isreim" id="isreim">
+                                <option value=""
+                                        <c:if test="${reimdet.isreim=='' or reimdet.isreim==null}">selected</c:if>></option>
+                                <option value="0" <c:if test="${reimdet.isreim=='0'}">selected</c:if>>是</option>
+                                <option value="1" <c:if test="${reimdet.isreim=='1'}">selected</c:if>>否</option>
+                            </select>
+                        </div>
+                        <div class="between-start padding-8px">
+                            <span class="mask-size mask-size-top">备&nbsp;&nbsp;&nbsp;&nbsp;注</span>
+                            <textarea class="mask-textarea mask-textarea4" id="remark" name="remark">${reimdet.remark}</textarea>
+                            <div class="mask-textarea-shrink mask-textarea4-shrink" >展<br/>开
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mask-button">
+                        <c:if test="${user.QX_SH != 1 }">
+                            <div class="mask-save"><span class="mask-button-size" onclick="save('2');">保存</span></div>
+                            <div class="mask-close" data-dismiss="modal"><span class="mask-button-size"
+                                                                               data-dismiss="modal">取消</span></div>
+                        </c:if>
+                        <c:if test="${user.QX_SH == 1 }">
+                            <div class="mask-save">
+                                <span class="mask-button-size" onclick="save('0');">审核通过</span>
+                                </div>
+                            <div class="mask-close">
+                                <span class="mask-button-size" onclick="save('1');">审核不通过</span>
+                            </div>
+                        </c:if>
+                    </div>
+
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="static/ace/js/date-time/bootstrap-datepicker.js"></script>
+<script type="text/javascript">
+
+
+    //$(top.hangge());
+    //保存
+    $(document).ready(function () {
+
+        if ($("#user_id").val() != "") {
+            $("#loginname").attr("readonly", "readonly");
+            $("#loginname").css("color", "gray");
+        }
+    });
+    $('.date-picker').datepicker({
+        autoclose: true,
+        todayHighlight: true
+    });
+
+    function ismon(paymon) {
+        return (new RegExp(/(^[1-9]([0-9]+)?(\.[0-9]{1,2})?$)|(^(0){1}$)|(^[0-9]\.[0-9]([0-9])?$)/).test(paymon));
+    }
+
+    function save(isaudit) {
+
+
+        document.getElementById("isaudit1").value=isaudit;
+
+        if ($("#csname").val() == "") {
+            $("#csname").tips({
+                side: 3,
+                msg: '不能为空',
+                bg: '#AE81FF',
+                time: 2
+            });
+            $("#csname").focus();
+            return false;
+        }
+        if ($("#time").val() == "") {
+            $("#time").tips({
+                side: 3,
+                msg: '不能为空',
+                bg: '#AE81FF',
+                time: 2
+            });
+            $("#time").focus();
+            return false;
+        }
+        if ($("#oneclass1").val() == "") {
+            $("#oneclass1").tips({
+                side: 3,
+                msg: '不能为空',
+                bg: '#AE81FF',
+                time: 2
+            });
+            $("#oneclass1").focus();
+            return false;
+        }
+
+        if ($("#reimmon").val() == "") {
+            $("#reimmon").tips({
+                side: 3,
+                msg: '不能为空',
+                bg: '#AE81FF',
+                time: 3
+            });
+            $("#reimmon").focus();
+            return false;
+        } else if (!ismon($("#reimmon").val())) {
+            $("#reimmon").tips({
+                side: 3,
+                msg: '格式不正确',
+                bg: '#AE81FF',
+                time: 3
+            });
+            $("#reimmon").focus();
+            return false;
+        }
+        if (!ismon($("#tripmon").val())) {
+            $("#tripmon").tips({
+                side: 3,
+                msg: '格式不正确',
+                bg: '#AE81FF',
+                time: 3
+            });
+            $("#tripmon").focus();
+            return false;
+        }
+        if ($("#realmon").val() == "") {
+            $("#realmon").tips({
+                side: 3,
+                msg: '不能为空',
+                bg: '#AE81FF',
+                time: 3
+            });
+            $("#realmon").focus();
+            return false;
+        } else if (!ismon($("#realmon").val())) {
+            $("#realmon").tips({
+                side: 3,
+                msg: '格式不正确',
+                bg: '#AE81FF',
+                time: 3
+            });
+            $("#realmon").focus();
+            return false;
+        }
+
+        $.ajax({
+            type: 'post',
+            data: $('#form_add').serialize(),
+            url: '<%=basePath%>reimdet/${msg}.do',
+            cache: false,
+            dataType: 'text',
+            success: function (data) {
+                if ("msg" != data) {
+                    location.href = "<%=basePath%>reimdet/findReimdet.do"
+
+                } else {
+                    confirm("保存失败")
+                }
+            }
+        })
+
+    }
+
+    function calmon() {
+        var reimmon = $("#reimmon").val();
+        var tripmon = $("#tripmon").val();
+        if (reimmon != null && tripmon != null) {
+            $("#realmon").val(Number(reimmon) + Number(tripmon));
+        }
+        if (reimmon != null && tripmon == null) {
+            $("#realmon").val(Number(reimmon));
+        }
+    }
+
+
+    function isphone(phone) {
+        return (new RegExp(/^(\(\d{3,4}\)|\d{3,4}-|\s)?\d{7,14}$/).test(phone));
+    }
+
+
+    $(function () {
+        //下拉框
+        if (!ace.vars['touch']) {
+            $('.chosen-select').chosen({allow_single_deselect: true});
+            $(window)
+                .off('resize.chosen')
+                .on('resize.chosen', function () {
+                    $('.chosen-select').each(function () {
+                        var $this = $(this);
+                        $this.next().css({'width': $this.parent().width()});
+                    });
+                }).trigger('resize.chosen');
+            $(document).on('settings.ace.chosen', function (e, event_name, event_val) {
+                if (event_name != 'sidebar_collapsed') return;
+                $('.chosen-select').each(function () {
+                    var $this = $(this);
+                    $this.next().css({'width': $this.parent().width()});
+                });
+            });
+            $('#chosen-multiple-style .btn').on('click', function (e) {
+                var target = $(this).find('input[type=radio]');
+                var which = parseInt(target.val());
+                if (which == 2) $('#form-field-select-4').addClass('tag-input-style');
+                else $('#form-field-select-4').removeClass('tag-input-style');
+            });
+        }
+    });
+
+    $('.mask-textarea1').click(function () {
+        $(".mask-textarea1-shrink").html("收<br />起")
+        $('.mask-textarea1').animate({
+            height: '135px',
+        })
+
+    });
+    $(".mask-textarea1-shrink").click(function () {
+        if (document.getElementsByClassName('mask-textarea1')[0].style.height === "24px") {
+            $(".mask-textarea1-shrink").html("收<br />起")
+            $('.mask-textarea1').animate({
+                height: '135px',
+            })
+        } else {
+            $(".mask-textarea1-shrink").html("展<br />开")
+            $('.mask-textarea1').animate({
+                height: '24px',
+            })
+        }
+    })
+
+    $('.mask-textarea2').click(function () {
+        $(".mask-textarea2-shrink").html("收<br />起")
+        $('.mask-textarea2').animate({
+            height: '135px',
+        })
+    });
+
+    $(".mask-textarea2-shrink").click(function () {
+        if (document.getElementsByClassName('mask-textarea2')[0].style.height === "24px") {
+            $(".mask-textarea2-shrink").html("收<br />起")
+            $('.mask-textarea2').animate({
+                height: '135px',
+            })
+        } else {
+            $(".mask-textarea2-shrink").html("展<br />开")
+            $('.mask-textarea2').animate({
+                height: '24px',
+            })
+        }
+    })
+
+    $('.mask-textarea3').click(function () {
+        $(".mask-textarea3-shrink").html("收<br />起")
+        $('.mask-textarea3').animate({
+            height: '135px',
+        })
+    });
+
+    $(".mask-textarea3-shrink").click(function () {
+        if (document.getElementsByClassName('mask-textarea3')[0].style.height === "24px") {
+            $(".mask-textarea3-shrink").html("收<br />起")
+            $('.mask-textarea3').animate({
+                height: '135px',
+            })
+        } else {
+            $(".mask-textarea3-shrink").html("展<br />开")
+            $('.mask-textarea3').animate({
+                height: '24px',
+            })
+        }
+    })
+
+    $('.mask-textarea4').click(function () {
+        $(".mask-textarea4-shrink").html("收<br />起")
+        $('.mask-textarea4').animate({
+            height: '135px',
+        })
+    });
+
+    $(".mask-textarea4-shrink").click(function () {
+        if (document.getElementsByClassName('mask-textarea4')[0].style.height === "24px") {
+            $(".mask-textarea4-shrink").html("收<br />起")
+            $('.mask-textarea4').animate({
+                height: '135px',
+            })
+        } else {
+            $(".mask-textarea4-shrink").html("展<br />开")
+            $('.mask-textarea4').animate({
+                height: '24px',
+            })
+        }
+    })
+</script>
+</body>
+</html>

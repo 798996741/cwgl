@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="ReimfyMapper">
+
+	<resultMap type="com.fh.pojo.tbreimfy" id="reimfyResultMap">
+		<id column="reimfyid" property="reimfyid"/>
+		<result column="classname" property="classname"/>
+		<result column="parentid" property="parentid"/>
+	</resultMap>
+
+	<select id="findReimfy" parameterType="pd" resultType="pd">
+		SELECT * FROM t_reimfy
+	</select>
+
+<!--	<select id="findOneClass" parameterType="pd" resultType="pd">-->
+<!--		SELECT DISTINCT oneclass from t_reimfy-->
+<!--	</select>-->
+<!--	&lt;!&ndash;根据一级分类查询二级分类&ndash;&gt;-->
+<!--	<select id="findTwoClass" parameterType="pd" resultType="pd">-->
+<!--		SELECT DISTINCT twoclass from t_reimfy WHERE oneclass=#{oneclass}-->
+<!--	</select>-->
+<!--	-->
+
+	<!-- 通过ID获取其子级列表 -->
+	<select id="listByEnCode" parameterType="String" resultMap="reimfyResultMap">
+		select
+		*
+		from
+		t_reimfy
+		where
+		encode = #{encode} order by classname
+	</select>
+	<!-- 通过ID获取其子级列表 -->
+	<select id="listByParentId" parameterType="String" resultMap="reimfyResultMap">
+		select
+		*
+		from
+		t_reimfy
+		where
+		parentid = #{parentid} order by classname
+	</select>
+
+	<!-- 列表 -->
+	<select id="datalistPage" parameterType="page" resultType="pd">
+		select
+		*
+		from
+		t_reimfy
+		where 1=1
+		<if test="pd.reimfyid!= null and pd.reimfyid != ''"><!-- 检索 -->
+			and parentid = #{pd.reimfyid}
+		</if>
+		<if test="pd.keywords != null and pd.keywords != ''"><!-- 关键词检索 -->
+			and
+			(
+			classname LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+			or
+			classdec LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+			or
+			source LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+			or
+			encode LIKE CONCAT(CONCAT('%', #{pd.keywords}),'%')
+			)
+		</if>
+	</select>
+
+	<select id="findReimfyByEncode" parameterType="pd" resultType="com.fh.pojo.tbreimfy">
+		SELECT * from t_reimfy where encode=#{encode}
+		<if test="reimfyid != null and reimfyid != ''">
+			and reimfyid = #{reimfyid}
+		</if>
+	</select>
+
+	<select id="findReimfyById" parameterType="pd" resultType="pd">
+		SELECT * from t_reimfy where reimfyid=#{reimfyid}
+	</select>
+
+	<update id="updateReimfy" parameterType="pd" >
+		UPDATE
+			t_reimfy
+		SET
+			reimfyid=#{reimfyid},
+			classname=#{classname},
+			classdec=#{classdec},
+			source=#{source},
+			username=#{username},
+			cztime=#{cztime},
+			encode=#{encode},
+			parentid=#{parentid}
+		WHERE
+			reimfyid=#{reimfyid}
+	</update>
+	
+	<insert id="insertReimfy" parameterType="pd">
+		INSERT INTO
+			t_reimfy
+		(
+			reimfyid,
+			classname,
+			classdec,
+			source,
+			username,
+			cztime,
+			encode,
+			parentid
+			)VALUES (
+			#{reimfyid},
+			#{classname},
+			#{classdec},
+			#{source},
+			#{username},
+			#{cztime},
+			#{encode},
+			#{parentid}
+		)
+	</insert>
+	
+	<delete id="deleteReimfy" parameterType="pd">
+		  DELETE FROM
+		  	t_reimfy
+		  WHERE reimfyid=#{reimfyid}
+	</delete>
+</mapper>

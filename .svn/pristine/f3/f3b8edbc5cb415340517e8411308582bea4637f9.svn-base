@@ -1,0 +1,205 @@
+package com.fh.controller.manage.supplier;
+
+import com.fh.controller.base.BaseController;
+import com.fh.service.manage.supplier.SupplierService;
+import com.fh.util.AppUtil;
+import com.fh.util.Jurisdiction;
+import com.fh.util.PageData;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
+
+import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+@Controller
+@RequestMapping(value = "/supplier")
+public class SupplierController extends BaseController {
+
+    @Resource
+    private SupplierService supplierService;
+    String redirect="redirect:/supplier/listsupplist.do";
+
+    @RequestMapping("/listsupplist.do")
+    public ModelAndView findAllList(){
+        ModelAndView mv = this.getModelAndView();
+        PageData pd = this.getPageData();
+        pd = this.getPageData();
+        List<PageData> slist = supplierService.findAllList(pd);
+        mv.setViewName("system/supplier/supplier_list");
+        mv.addObject("sList",slist);
+        return mv;
+    }
+    @RequestMapping("/findSupById.do")
+    public ModelAndView findOneById(){
+        ModelAndView mv = this.getModelAndView();
+        PageData pd = this.getPageData();
+        pd = this.getPageData();
+        PageData stList = supplierService.findById(pd);
+        List<PageData> name = supplierService.findCsname(pd);
+        mv.addObject("csname1",name);
+        mv.setViewName("system/supplier/supplier_edit");
+        mv.addObject("msg", "updateSupplier");
+        mv.addObject("stList",stList);
+        return mv;
+    }
+
+    @RequestMapping("/findPuecById.do")
+    public ModelAndView findPuecById(){
+        ModelAndView mv = this.getModelAndView();
+        PageData pd = this.getPageData();
+        pd = this.getPageData();
+        List<PageData> spList = supplierService.findPuecById(pd);
+        System.out.println(spList);
+        mv.setViewName("system/supplier/supplier_editb");
+
+        mv.addObject("msg", "updatePurchase");
+        mv.addObject("spList",spList);
+        mv.addObject("pd",pd);
+        return mv;
+    }
+    @RequestMapping(value = "/goAddS.do")
+    public ModelAndView goAddS() throws Exception {
+
+        ModelAndView mv = this.getModelAndView();
+        PageData pd = this.getPageData();
+        pd = this.getPageData();
+        List<PageData> name = supplierService.findCsname(pd);
+        mv.addObject("csname1",name);
+        mv.setViewName("system/supplier/supplier_edit");
+        mv.addObject("msg", "insertSupplier");
+        return mv;
+    }
+
+//    @RequestMapping("/findCsname.do")
+//    public ModelAndView findCsname(){
+//        ModelAndView mv = this.getModelAndView();
+//        PageData pd = this.getPageData();
+//        pd = this.getPageData();
+//        HttpServletRequest request = this.getRequest();
+//        List<PageData> name = supplierService.findCsname(pd);
+//        System.out.println(name);
+//        mv.setViewName("system/supplier/supplier_edit");
+//        mv.addObject("csname1",name);
+//        request.setAttribute("csname1",name);
+//        return mv;
+//    }
+
+    @RequestMapping(value = "/hasSupno")
+    @ResponseBody
+    public Object hasSupno(String supno) {
+        Map<String, String> map = new HashMap<String, String>();
+        String errInfo = "success";
+        PageData pd = new PageData();
+        pd.put("supno",supno);
+        List<PageData> list = supplierService.findSupno(pd);
+        System.out.println(list);
+        System.out.println(pd);
+        try {
+            pd = this.getPageData();
+            if (!list.isEmpty()) {
+                errInfo = "error";
+            }
+        } catch (Exception e) {
+            logger.error(e.toString(), e);
+        }
+        map.put("result", errInfo);                //返回结果
+        return AppUtil.returnObject(new PageData(), map);
+    }
+
+    @RequestMapping(value = "/findSupfname")
+    @ResponseBody
+    public Object findSupfname(String supfname) {
+        Map<String, String> map = new HashMap<String, String>();
+        String errInfo = "success";
+        PageData pd = new PageData();
+        pd.put("clifname",supfname);
+        List<PageData> list = supplierService.findSupfname(pd);
+        System.out.println(list);
+        System.out.println(pd);
+        try {
+            pd = this.getPageData();
+            if (!list.isEmpty()) {
+                errInfo = "error";
+            }
+        } catch (Exception e) {
+            logger.error(e.toString(), e);
+        }
+        map.put("result", errInfo);                //返回结果
+        return AppUtil.returnObject(new PageData(), map);
+    }
+
+    @RequestMapping("/deleteSupplierById.do")
+    public String deleteSupplierById(){
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        supplierService.deleteSupplierById(pd);
+        return redirect;
+    }
+
+    @RequestMapping(value = "/deletePurById.do")
+    public String deletePurById(){
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        supplierService.deletePurById(pd);
+        return redirect;
+
+    }
+
+    @RequestMapping("/insertSupplier.do")
+    public String insertSupplier(){
+        ModelAndView mv = this.getModelAndView();
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        supplierService.insertSupplier(pd);
+        supplierService.insertTxaInfo(pd);
+        mv.addObject("msg", "success");
+        return redirect;
+    }
+
+    @RequestMapping("/insertPurchase.do")
+    @ResponseBody
+    public String insertPurchase(){
+        ModelAndView mv = this.getModelAndView();
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        pd.put("username", Jurisdiction.getUsername());
+        Date date = new Date();
+        SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        pd.put("cztime",dateFormat.format(date));
+        supplierService.insertPurchase(pd);
+        mv.addObject("msg", "success");
+        return "success";
+    }
+
+    @RequestMapping("/updateSupplier.do")
+    public String updateSupplier(){
+        ModelAndView mv = this.getModelAndView();
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        supplierService.updateSupplier(pd);
+        supplierService.updateTxaInfoById(pd);
+        mv.addObject("msg", "success");
+        return redirect;
+    }
+
+    @RequestMapping("/updatePurchase.do")
+    @ResponseBody
+    public String updatePurchase(){
+
+        PageData pd = new PageData();
+        pd = this.getPageData();
+        pd.put("username", Jurisdiction.getUsername());
+        Date date = new Date();
+        SimpleDateFormat dateFormat= new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        pd.put("cztime",dateFormat.format(date));
+        System.out.println(pd);
+        supplierService.updatePurchaseById(pd);
+        return "success";
+    }
+}

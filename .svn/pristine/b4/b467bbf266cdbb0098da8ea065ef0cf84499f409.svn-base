@@ -1,0 +1,52 @@
+package com.fh.service.manage.reimfy.impl;
+
+import com.fh.dao.DAO;
+import com.fh.pojo.tbreimfy;
+import com.fh.service.manage.reimfy.ReimfyService;
+import com.fh.util.PageData;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+@Service("reimfyServiceImpl")
+public class ReimfyServiceImpl implements ReimfyService{
+    @Resource(name = "daoSupport")
+    private DAO dao;
+
+
+    @Override
+    public List<tbreimfy> findReimfy(PageData pd) throws Exception {
+        return (List<tbreimfy>)dao.findForList("ReimfyMapper.findReimfy",pd);
+    }
+
+    @Override
+    public List<tbreimfy> findOneClass(PageData pd) throws Exception {
+        return (List<tbreimfy>)dao.findForList("ReimfyMapper.findOneClass",pd);
+    }
+
+    @Override
+    public List<tbreimfy> findTwoClass(PageData pd) throws Exception {
+        return (List<tbreimfy>)dao.findForList("ReimfyMapper.findTwoClass",pd);
+    }
+
+    @Override
+    public tbreimfy findReimfyById(PageData pd) throws Exception {
+        return (tbreimfy)dao.findForObject("ReimfyMapper.findReimfyById",pd);
+    }
+
+    @Override
+    public void updateReimfy(PageData pd) throws Exception {
+        dao.update("ReimfyMapper.updateReimfy",pd);
+    }
+
+    @Override
+    public void insertReimfy(PageData pd) throws Exception {
+        dao.save("ReimfyMapper.insertReimfy",pd);
+    }
+
+    @Override
+    public void deleteReimfy(PageData pd) throws Exception {
+        dao.delete("ReimfyMapper.deleteReimfy",pd);
+    }
+}

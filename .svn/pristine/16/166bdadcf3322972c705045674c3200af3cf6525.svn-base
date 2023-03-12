@@ -1,0 +1,232 @@
+var dateArray = []
+var dateObj = {}
+var day = moment().format('YYYY-MM-DD')
+var comDate = {} // 比较请假天数
+var day_diff = '' // 请假0天
+var leaveDecimal = ''
+for (var i = 0; i <= 200; i++) {
+  dateObj.label = moment()
+    .add(i, 'days')
+    .format('YYYY-MM-DD')
+  dateObj.value = moment()
+    .add(i, 'days')
+    .format('YYYY-MM-DD')
+  dateArray.push(dateObj)
+  dateObj = {}
+}
+$('#showPickerStart').on('click', () => {
+  var startTime = ''
+  weui.picker(
+    dateArray,
+    [
+      {
+        label: '上午',
+        value: 0
+      },
+      {
+        label: '下午',
+        value: 1
+      }
+    ],
+    {
+      defaultValue: [day, 0],
+      onChange: function(result) {
+        console.log(result)
+      },
+      onConfirm: function(result) {
+        console.log(result)
+        comDate.startTime = moment(result[0].value)
+        comDate.startDecimal = result[1].value
+        $('#showPickerStart').text(result[0].label + result[1].label)
+        $('#startTime').val(result[0].label + result[1].label)
+        var diffDecimal = 0
+        console.log(comDate)
+        if (comDate.endTime) {
+          if (comDate.endDecimal - comDate.startDecimal === 0) {
+            diffDecimal = 0.5
+          } else if (comDate.endDecimal - comDate.startDecimal === 1) {
+            diffDecimal = 1
+          } else {
+            diffDecimal = 0
+          }
+          day_diff =
+            comDate.endTime.diff(comDate.startTime, 'days') + diffDecimal
+          console.log(day_diff)
+          $('#leaveDays').val(day_diff + '天')
+        }
+      },
+      id: 'showPickerStart',
+      title: '开始时间'
+    }
+  )
+  console.log('startTime' + startTime)
+})
+$('#showPickerEnd').on('click', function() {
+  weui.picker(
+    dateArray,
+    [
+      {
+        label: '上午',
+        value: 0
+      },
+      {
+        label: '下午',
+        value: 1
+      }
+    ],
+    {
+      defaultValue: [day, 0],
+      onChange: function(result) {
+        console.log(result)
+      },
+      onConfirm: function(result) {
+        console.log(result)
+        comDate.endTime = moment(result[0].value)
+        comDate.endDecimal = result[1].value
+        console.log(comDate)
+        $('#showPickerEnd').text(result[0].label + result[1].label)
+        $('#endTime').val(result[0].label + result[1].label)
+        if (comDate.startTime) {
+          var diffDecimal = 0
+          if (comDate.endDecimal - comDate.startDecimal === 0) {
+            diffDecimal = 0.5
+          } else if (comDate.endDecimal - comDate.startDecimal === 1) {
+            diffDecimal = 1
+          } else {
+            diffDecimal = 0
+          }
+          console.log(diffDecimal)
+          day_diff =
+            comDate.endTime.diff(comDate.startTime, 'days') + diffDecimal
+          $('#leaveDays').val(day_diff + '天')
+        }
+      },
+      id: 'showPickerEnd',
+      title: '结束时间'
+    }
+  )
+})
+$('#showPicker').on('click', function() {
+  weui.picker(
+    [
+      {
+        label: '病假',
+        value: 0
+      },
+      {
+        label: '事假',
+        value: 1
+      },
+      {
+        label: '调休假',
+        value: 2
+      },
+      {
+        label: '婚假',
+        value: 3
+      },
+      {
+        label: '产假',
+        value: 4
+      },
+      {
+        label: '其他',
+        value: 5
+      }
+    ],
+    {
+      onChange: function(result) {
+        console.log(result)
+      },
+      onConfirm: function(result) {
+        console.log(result[0].label)
+        $('#showPicker').text(result[0].label)
+        $('#leaveType').val(result[0].label)
+      },
+      title: '请假类型'
+    }
+  )
+})
+
+$(function() {
+  $('#button').on('click', function() {
+    weui.form.validate(
+      '#form',
+      function(error) {
+        if (!error) {
+          var formdata = $('form').serializeArray()
+          var data = {}
+          $(formdata).each(function(index, obj) {
+            data[obj.name] = obj.value
+          })
+          var content = JSON.stringify(data)
+          console.log(content)
+
+          var $loadingToast = $('#loadingToast')
+
+          $.ajax({
+            type: 'POST',
+            url: `${url}/leave`,
+            dataType: 'json',
+            data: content,
+            contentType: 'application/json',
+            success: function(res) {
+              var $toast = $('#js_toast')
+              console.log($toast)
+              if ($toast.css('display') != 'none') return
+              $loadingToast.fadeOut(100)
+              $toast.fadeIn(100)
+              setTimeout(function() {
+                $toast.fadeOut(100)
+                wx.closeWindow()
+              }, 200)
+              console.log(res)
+            },
+            error: function(xhr, type) {
+              console.log(type)
+            }
+          })
+
+          if ($loadingToast.css('display') != 'none') return
+          $loadingToast.fadeIn(100)
+        } else {
+          switch (error.ele.id) {
+            case 'leaveType':
+              weui.form.showErrorTips({
+                ele: document.getElementById('leaveType'),
+                msg: 'empty'
+              })
+              break
+            case 'startTime':
+              weui.form.showErrorTips({
+                ele: document.getElementById('startTime'),
+                msg: 'empty'
+              })
+              break
+            case 'endTime':
+              weui.form.showErrorTips({
+                ele: document.getElementById('endTime'),
+                msg: 'empty'
+              })
+              break
+            case 'leaveReason':
+              weui.form.showErrorTips({
+                ele: document.getElementById('leaveReason'),
+                msg: 'empty'
+              })
+              break
+          }
+        }
+        // return true; // 当return true时，不会显示错误
+      },
+      {
+        regexp: {
+          leaveType: /^[\u4e00-\u9fa5]{0,}$/,
+          startTime: /^[\u4E00-\u9FA50-9*\-+]+$/,
+          endTime: /^[\u4E00-\u9FA50-9*\-+]+$/,
+          leaveReason: /^[\u4E00-\u9FA5A-Za-z0-9_]+$/
+        }
+      }
+    )
+  })
+})

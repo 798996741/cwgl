@@ -1,0 +1,94 @@
+package com.fh.service.manage.client.impl;
+
+import com.fh.dao.manage.ClientDao;
+import com.fh.service.manage.client.ClientService;
+import com.fh.util.PageData;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+@Service("clientServiceImpl")
+public class ClientServiceImpl implements ClientService{
+
+    @Resource(name = "clientDaoImpl")
+    private ClientDao ClientDao;
+
+
+    @Override
+    public List<PageData> findAllList(PageData pd) {
+        return (List<PageData>)ClientDao.findAllList("ClientMapper.findAllList",pd);
+
+    }
+
+    @Override
+    public PageData findById(PageData pd) {
+        return (PageData)ClientDao.findById("ClientMapper.findById",pd);
+
+    }
+
+    @Override
+    public List<PageData> findSellpById(PageData pd) {
+        return (List<PageData>)ClientDao.findSellpById("ClientMapper.findSellpById",pd);
+
+    }
+
+    @Override
+    public void deleteClient(PageData pd) {
+        ClientDao.deleteClient("ClientMapper.deleteClient",pd);
+    }
+
+    @Override
+    public void deleteSellpById(PageData pd) {
+        ClientDao.deleteSellpById("ClientMapper.deleteSellpById",pd);
+    }
+
+    @Override
+    public List<PageData> findCsname(PageData pd) {
+        return (List<PageData>)ClientDao.findCsname("ClientMapper.findCsname",pd);
+
+    }
+
+    @Override
+    public List<PageData> findClino(PageData pd) {
+        return (List<PageData>)ClientDao.findClino("ClientMapper.findClino",pd);
+
+    }
+
+    @Override
+    public List<PageData> findClifname(PageData pd) {
+        return (List<PageData>)ClientDao.findClifname("ClientMapper.findClifname",pd);
+    }
+
+    @Override
+    public void updateClientById(PageData pd) {
+        ClientDao.updateClientById("ClientMapper.updateClientById",pd);
+    }
+
+    @Override
+    public void updateSellpById(PageData pd) {
+        ClientDao.updateClientById("ClientMapper.updateSellpById",pd);
+    }
+
+    @Override
+    public void updateTaxinfoById(PageData pd) {
+        ClientDao.updateClientById("ClientMapper.updateTaxinfoById",pd);
+
+    }
+
+    @Override
+    public void insertClient(PageData pd) {
+        ClientDao.insertClient("ClientMapper.insertClient",pd);
+    }
+
+    @Override
+    public void insertTaxinfo(PageData pd) {
+        ClientDao.insertTaxinfo("ClientMapper.insertTaxinfo",pd);
+
+    }
+
+    @Override
+    public void insertSellp(PageData pd) {
+        ClientDao.insertSellp("ClientMapper.insertSellp",pd);
+    }
+}
